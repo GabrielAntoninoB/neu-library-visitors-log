@@ -13,8 +13,6 @@
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       min-height: 100vh; display: flex; flex-direction: column;
     }
-
-    /* NAVBAR */
     .navbar {
       display: flex; align-items: center; justify-content: space-between;
       padding: 14px 32px;
@@ -26,18 +24,14 @@
     .nav-title { color: #fff; font-weight: 600; font-size: 1rem; }
     .nav-user  { color: rgba(255,255,255,.6); font-size: .85rem; display: flex; align-items: center; gap: 6px; }
 
-    /* MAIN — form view */
     .main {
       flex: 1; display: flex; flex-direction: column;
-      align-items: center; padding: 40px 16px; gap: 20px;
+      align-items: center; padding: 32px 16px; gap: 20px;
     }
-
-    /* Welcome banner */
     .welcome-card {
       background: rgba(255,255,255,.08); backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,.15); border-radius: 16px;
-      padding: 22px 28px; text-align: center; width: 100%; max-width: 480px;
-      color: #fff;
+      padding: 20px 28px; text-align: center; width: 100%; max-width: 560px; color: #fff;
     }
     .welcome-card svg { color: rgba(255,255,255,.7); margin-bottom: 8px; }
     .welcome-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 4px; }
@@ -45,112 +39,132 @@
     .student-badge {
       display: inline-flex; align-items: center; gap: 6px;
       background: rgba(255,255,255,.12); border-radius: 20px;
-      padding: 4px 12px; font-size: .82rem; color: rgba(255,255,255,.8);
-      margin-top: 10px;
+      padding: 4px 12px; font-size: .82rem; color: rgba(255,255,255,.8); margin-top: 10px;
     }
 
-    /* Purpose card */
-    .purpose-card {
+    .form-card {
       background: #fff; border-radius: 20px;
       box-shadow: 0 12px 40px rgba(0,0,0,.18);
-      width: 100%; max-width: 480px; padding: 28px;
+      width: 100%; max-width: 560px; padding: 28px 32px;
     }
-    .purpose-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: #1a1a2e; margin-bottom: 6px; }
-    .purpose-subtitle { color: #6b7280; font-size: .85rem; margin-bottom: 18px; }
+    .form-card-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: #1a1a2e; margin-bottom: 4px; }
+    .form-card-sub { color: #6b7280; font-size: .85rem; margin-bottom: 24px; }
 
-    /* Chips */
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-    .chip {
-      padding: 6px 13px; border-radius: 20px; font-size: .82rem;
-      border: 1.5px solid #e5e7eb; background: #f9fafb; color: #374151;
-      cursor: pointer; transition: all .15s; user-select: none;
+    .section-label {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      color: #9ca3af; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9;
     }
-    .chip:hover, .chip.active { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
+    .section { margin-bottom: 24px; }
 
-    .purpose-textarea {
-      width: 100%; padding: 12px 14px;
-      border: 1.5px solid #e5e7eb; border-radius: 12px;
-      font-family: inherit; font-size: .9rem; color: #1a1a2e;
-      resize: vertical; outline: none; transition: border-color .2s;
-      margin-bottom: 18px; min-height: 110px;
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: .82rem; font-weight: 600; color: #374151; margin-bottom: 5px; }
+    .required { color: var(--neu-red); margin-left: 2px; }
+
+    .input-wrapper { position: relative; }
+    .input-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: #9ca3af; display: flex; pointer-events: none;
     }
-    .purpose-textarea:focus { border-color: #1a1a2e; }
-    .purpose-textarea.textarea-error { border-color: #ef4444; }
+    .form-input, .form-select {
+      width: 100%; padding: 10px 12px 10px 38px;
+      border: 1.5px solid #e5e7eb; border-radius: 10px;
+      font-family: inherit; font-size: .88rem; color: #1a1a2e;
+      outline: none; transition: border-color .2s, box-shadow .2s; background: #fff;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: #1a1a2e; box-shadow: 0 0 0 3px rgba(26,26,46,.07);
+    }
+    .form-input.error, .form-select.error { border-color: #ef4444; }
+    .form-select { appearance: none; cursor: pointer; }
+    .select-arrow {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color: #9ca3af; pointer-events: none;
+    }
+
+    .type-toggle { display: flex; gap: 8px; flex-wrap: wrap; }
+    .type-btn {
+      flex: 1; min-width: 80px; padding: 9px 10px; border-radius: 10px;
+      border: 1.5px solid #e5e7eb; background: #f9fafb; color: #6b7280;
+      font-family: inherit; font-size: .82rem; font-weight: 500;
+      cursor: pointer; transition: all .15s; text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .type-btn.active { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
+    .type-btn:hover:not(.active) { border-color: #9ca3af; }
+
+    .other-box {
+      width: 100%; padding: 10px 12px;
+      border: 1.5px solid #e5e7eb; border-radius: 10px;
+      font-family: inherit; font-size: .88rem; color: #1a1a2e;
+      outline: none; resize: vertical; min-height: 80px;
+      transition: border-color .2s; margin-top: 10px; display: none;
+    }
+    .other-box.visible { display: block; }
+    .other-box:focus { border-color: #1a1a2e; box-shadow: 0 0 0 3px rgba(26,26,46,.07); }
+    .other-box.error { border-color: #ef4444; }
+
+    .error-msg { font-size: .75rem; color: #ef4444; margin-top: 4px; display: none; }
+    .error-msg.show { display: block; }
 
     .submit-btn {
-      width: 100%; padding: 14px;
+      width: 100%; padding: 13px;
       background: linear-gradient(135deg, var(--neu-red), #a93226);
       color: #fff; border: none; border-radius: 12px;
       font-family: inherit; font-size: .95rem; font-weight: 600;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
-      gap: 8px; transition: opacity .2s;
+      gap: 8px; transition: opacity .2s; margin-top: 6px;
     }
     .submit-btn:hover { opacity: .88; }
     .submit-btn:disabled { opacity: .5; cursor: not-allowed; }
 
-    /* ── SUCCESS SCREEN ── */
+    /* SUCCESS */
     .success-screen {
-      display: none;
-      flex: 1; flex-direction: column;
+      display: none; flex: 1; flex-direction: column;
       align-items: center; justify-content: center;
-      padding: 40px 16px; text-align: center;
-      animation: fadeIn .5s ease;
+      padding: 40px 16px; text-align: center; animation: fadeIn .5s ease;
     }
     .success-screen.visible { display: flex; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
     .success-circle {
       width: 96px; height: 96px; border-radius: 50%;
       background: linear-gradient(135deg, #16a34a, #15803d);
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
       box-shadow: 0 0 0 16px rgba(22,163,74,.15), 0 0 0 32px rgba(22,163,74,.07);
     }
     .success-circle svg { color: #fff; }
-
-    .success-heading {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem; color: #fff; margin-bottom: 10px;
-    }
-    .success-msg {
-      color: rgba(255,255,255,.7); font-size: .95rem;
-      max-width: 340px; line-height: 1.6; margin-bottom: 28px;
-    }
+    .success-heading { font-family: 'Playfair Display', serif; font-size: 2rem; color: #fff; margin-bottom: 10px; }
+    .success-msg { color: rgba(255,255,255,.7); font-size: .95rem; max-width: 340px; line-height: 1.6; margin-bottom: 28px; }
 
     .success-info-card {
       background: rgba(255,255,255,.08); backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,.15); border-radius: 14px;
-      padding: 18px 24px; width: 100%; max-width: 420px;
-      margin-bottom: 28px;
+      padding: 18px 24px; width: 100%; max-width: 460px; margin-bottom: 28px;
     }
     .info-row {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.08);
-      font-size: .85rem;
+      padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.08); font-size: .85rem;
     }
     .info-row:last-child { border-bottom: none; }
     .info-label { color: rgba(255,255,255,.5); font-weight: 500; }
-    .info-value { color: #fff; font-weight: 600; text-align: right; max-width: 60%; word-break: break-all; }
+    .info-value { color: #fff; font-weight: 600; text-align: right; max-width: 65%; word-break: break-word; }
 
     .home-btn {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 14px 32px; background: #fff; color: #1a1a2e;
-      border-radius: 12px; text-decoration: none;
-      font-weight: 600; font-size: .95rem;
-      transition: transform .15s, box-shadow .15s;
-      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      border-radius: 12px; text-decoration: none; font-weight: 600; font-size: .95rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2); transition: transform .15s, box-shadow .15s;
     }
     .home-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
 
-    .footer {
-      text-align: center; padding: 16px; color: rgba(255,255,255,.35); font-size: .78rem;
-    }
+    .footer { text-align: center; padding: 16px; color: rgba(255,255,255,.35); font-size: .78rem; }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 520px) {
+      .form-row { grid-template-columns: 1fr; }
+      .form-card { padding: 22px 18px; }
+      .type-btn { font-size: .75rem; padding: 8px 6px; }
+    }
   </style>
 </head>
 <body>
@@ -162,116 +176,192 @@
     </div>
     <div class="nav-user" id="navUser">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
       </svg>
-      <span id="navUserName">Student</span>
+      <span id="navUserName">Visitor</span>
     </div>
   </nav>
 
-  <!-- ── FORM VIEW ── -->
+  <!-- FORM VIEW -->
   <main class="main" id="formView">
-
     <div class="welcome-card">
-      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
         <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
       </svg>
       <h1 class="welcome-title">Welcome to NEU Library</h1>
-      <p class="welcome-subtitle">Enhancing your learning experience</p>
+      <p class="welcome-subtitle">Please complete the visitor log before entering</p>
       <div class="student-badge">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
         <span id="studentBadge">Loading…</span>
       </div>
     </div>
 
-    <div class="purpose-card" id="purposeCard">
-      <h2 class="purpose-title">What is your purpose for visiting today?</h2>
-      <p class="purpose-subtitle">This helps us improve our services. Choose one or type your own.</p>
+    <div class="form-card">
+      <h2 class="form-card-title">Visitor Log Form</h2>
+      <p class="form-card-sub">Fill in your details to log your visit to the library.</p>
 
-      <div class="chips">
-        <span class="chip" onclick="pickChip(this)">Studying</span>
-        <span class="chip" onclick="pickChip(this)">Research</span>
-        <span class="chip" onclick="pickChip(this)">Borrowing Books</span>
-        <span class="chip" onclick="pickChip(this)">Using Computers</span>
-        <span class="chip" onclick="pickChip(this)">Thesis Writing</span>
-        <span class="chip" onclick="pickChip(this)">Group Study</span>
-        <span class="chip" onclick="pickChip(this)">Reading Journals</span>
-        <span class="chip" onclick="pickChip(this)">Printing / Scanning</span>
+      <!-- SECTION 1: Personal Info -->
+      <div class="section">
+        <div class="section-label">Personal Information</div>
+
+        <div class="form-group">
+          <label class="form-label">Visitor Type <span class="required">*</span></label>
+          <div class="type-toggle">
+            <button type="button" class="type-btn active" onclick="setType('Student', this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+              Student
+            </button>
+            <button type="button" class="type-btn" onclick="setType('Teacher', this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C10.34 3 9 4.34 9 6s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              Teacher
+            </button>
+            <button type="button" class="type-btn" onclick="setType('Staff', this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 7H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 3h2v2h-2v-2zm0 4h2v2h-2v-2zM7 10h2v2H7v-2zm0 4h2v2H7v-2zm10 4H7v-2h10v2zm0-4h-2v-2h2v2zm0-4h-2v-2h2v2z"/></svg>
+              Staff
+            </button>
+            <button type="button" class="type-btn" onclick="setType('Guest', this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              Guest
+            </button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="visitorName">Full Name <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+              </span>
+              <input type="text" id="visitorName" class="form-input" placeholder="e.g. Juan dela Cruz"/>
+            </div>
+            <div class="error-msg" id="nameErr">Please enter your full name.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="visitorGmail">Gmail Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                </svg>
+              </span>
+              <input type="email" id="visitorGmail" class="form-input" placeholder="yourname@gmail.com" readonly style="background:#f9fafb;color:#6b7280;"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" id="collegeGroup">
+          <label class="form-label" for="visitorCollege">College / Department <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18V17h14v-5.82L23 9 12 3zm6 12H6v-4.5l6 3.27 6-3.27V15zm-6-4.73L4.5 8.37 12 5.27l7.5 3.1L12 10.27z"/></svg>
+            </span>
+            <select id="visitorCollege" class="form-select">
+              <option value="">— Select College / Department —</option>
+              <option>College of Arts and Sciences</option>
+              <option>College of Business and Accountancy</option>
+              <option>College of Informatics and Computer Studies</option>
+              <option>College of Criminology</option>
+              <option>College of Education</option>
+              <option>College of Engineering and Architecture</option>
+              <option>College of Health Sciences</option>
+              <option>College of Music</option>
+              <option>College of Nursing</option>
+              <option>Senior High School</option>
+              <option>Graduate School</option>
+              <option>Administration Office</option>
+              <option>Library Department</option>
+              <option>Other Department</option>
+            </select>
+            <span class="select-arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </div>
+          <div class="error-msg" id="collegeErr">Please select your college or department.</div>
+        </div>
       </div>
 
-      <textarea id="purposeInput" class="purpose-textarea"
-        placeholder="Type your purpose here or select from above…" rows="4"></textarea>
+      <!-- SECTION 2: Purpose -->
+      <div class="section">
+        <div class="section-label">Purpose of Visit</div>
+        <div class="form-group">
+          <label class="form-label" for="purposeSelect">Reason for Visiting <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+            </span>
+            <select id="purposeSelect" class="form-select" onchange="handlePurposeChange()">
+              <option value="">— Select purpose —</option>
+              <option value="Studying">Studying</option>
+              <option value="Research">Research</option>
+              <option value="Borrowing Books">Borrowing Books</option>
+              <option value="Returning Books">Returning Books</option>
+              <option value="Using Computers">Using Computers</option>
+              <option value="Thesis Writing">Thesis Writing</option>
+              <option value="Group Study">Group Study</option>
+              <option value="Reading Journals / Periodicals">Reading Journals / Periodicals</option>
+              <option value="Printing / Scanning">Printing / Scanning</option>
+              <option value="Accessing e-Resources">Accessing e-Resources</option>
+              <option value="Others">Others (please specify)</option>
+            </select>
+            <span class="select-arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </div>
+          <div class="error-msg" id="purposeErr">Please select a purpose.</div>
+          <textarea id="othersBox" class="other-box" placeholder="Please describe your purpose…"></textarea>
+          <div class="error-msg" id="othersErr">Please describe your purpose.</div>
+        </div>
+      </div>
 
       <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
         <span id="submitBtnText">Log My Visit</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
         </svg>
       </button>
     </div>
-
   </main>
 
-  <!-- ── SUCCESS SCREEN ── -->
+  <!-- SUCCESS SCREEN -->
   <div class="success-screen" id="successScreen">
-
     <div class="success-circle">
-      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="20 6 9 17 4 12"/>
       </svg>
     </div>
-
     <h2 class="success-heading">Entry Registered!</h2>
     <p class="success-msg">Your visit has been successfully logged. Welcome to the NEU Library — enjoy your stay!</p>
-
     <div class="success-info-card">
-      <div class="info-row">
-        <span class="info-label">Student</span>
-        <span class="info-value" id="sName">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Gmail</span>
-        <span class="info-value" id="sEmail">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Purpose</span>
-        <span class="info-value" id="sPurpose">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Date</span>
-        <span class="info-value" id="sDate">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Time In</span>
-        <span class="info-value" id="sTime">—</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Status</span>
-        <span class="info-value" style="color:#4ade80;">✅ Inside</span>
-      </div>
+      <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="sName">—</span></div>
+      <div class="info-row"><span class="info-label">Gmail</span><span class="info-value" id="sEmail">—</span></div>
+      <div class="info-row"><span class="info-label">Type</span><span class="info-value" id="sType">—</span></div>
+      <div class="info-row"><span class="info-label">College / Dept.</span><span class="info-value" id="sCollege">—</span></div>
+      <div class="info-row"><span class="info-label">Purpose</span><span class="info-value" id="sPurpose">—</span></div>
+      <div class="info-row"><span class="info-label">Date</span><span class="info-value" id="sDate">—</span></div>
+      <div class="info-row"><span class="info-label">Time In</span><span class="info-value" id="sTime">—</span></div>
+      <div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color:#4ade80;">✅ Inside</span></div>
     </div>
-
     <a href="index.html" class="home-btn">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-      </svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       Return to Home
     </a>
-
   </div>
 
   <footer class="footer">
     <p>© 2026 New Era University Library. All rights reserved.</p>
   </footer>
 
-  <!-- FIREBASE -->
   <script type="module">
-    import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp }
-                                  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+                               from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAGzGi9sm0nh-rccNKze_DYBGVb7nnIg1Q",
@@ -286,31 +376,65 @@
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
 
-    const studentEmail = sessionStorage.getItem('studentEmail') || 'unknown@gmail.com';
-    const studentName  = sessionStorage.getItem('studentName')  || 'Student';
+    const studentEmail = sessionStorage.getItem('studentEmail') || '';
+    const studentName  = sessionStorage.getItem('studentName')  || '';
 
-    document.getElementById('navUserName').textContent  = studentName;
-    document.getElementById('studentBadge').textContent = studentEmail;
+    document.getElementById('navUserName').textContent  = studentName || 'Visitor';
+    document.getElementById('studentBadge').textContent = studentEmail || 'Not signed in';
+    if (studentEmail) document.getElementById('visitorGmail').value = studentEmail;
+    if (studentName)  document.getElementById('visitorName').value  = studentName;
 
-    window.pickChip = function(el) {
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      document.getElementById('purposeInput').value = el.textContent.trim();
-      document.getElementById('purposeInput').classList.remove('textarea-error');
+    let visitorType = 'Student';
+
+    window.setType = function(type, btn) {
+      visitorType = type;
+      document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('collegeGroup').style.display = (type === 'Guest') ? 'none' : 'block';
     };
 
-    window.handleSubmit = async function () {
-      const purpose = document.getElementById('purposeInput').value.trim();
-      if (!purpose) {
-        document.getElementById('purposeInput').classList.add('textarea-error');
-        document.getElementById('purposeInput').focus();
-        return;
-      }
+    window.handlePurposeChange = function() {
+      const val = document.getElementById('purposeSelect').value;
+      document.getElementById('othersBox').classList.toggle('visible', val === 'Others');
+      document.getElementById('purposeErr').classList.remove('show');
+      document.getElementById('othersErr').classList.remove('show');
+    };
+
+    function validate() {
+      let ok = true;
+      const name    = document.getElementById('visitorName').value.trim();
+      const college = document.getElementById('visitorCollege').value;
+      const purpose = document.getElementById('purposeSelect').value;
+      const others  = document.getElementById('othersBox').value.trim();
+
+      const setErr = (fieldId, errId, show) => {
+        document.getElementById(fieldId).classList.toggle('error', show);
+        document.getElementById(errId).classList.toggle('show', show);
+        if (show) ok = false;
+      };
+
+      setErr('visitorName', 'nameErr', !name);
+      if (visitorType !== 'Guest') setErr('visitorCollege', 'collegeErr', !college);
+      setErr('purposeSelect', 'purposeErr', !purpose);
+      if (purpose === 'Others') setErr('othersBox', 'othersErr', !others);
+
+      return ok;
+    }
+
+    window.handleSubmit = async function() {
+      if (!validate()) return;
 
       const btn = document.getElementById('submitBtn');
       const txt = document.getElementById('submitBtnText');
-      btn.disabled = true;
-      txt.textContent = 'Saving…';
+      btn.disabled = true; txt.textContent = 'Saving…';
+
+      const name       = document.getElementById('visitorName').value.trim();
+      const gmail      = document.getElementById('visitorGmail').value.trim() || studentEmail;
+      const college    = visitorType === 'Guest' ? 'N/A' : document.getElementById('visitorCollege').value;
+      const purposeRaw = document.getElementById('purposeSelect').value;
+      const purpose    = purposeRaw === 'Others'
+                           ? document.getElementById('othersBox').value.trim()
+                           : purposeRaw;
 
       const now     = new Date();
       const dateStr = now.toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
@@ -318,27 +442,23 @@
 
       try {
         await addDoc(collection(db, 'visitors'), {
-          gmail:     studentEmail,
-          name:      studentName,
-          purpose:   purpose,
-          date:      dateStr,
-          timeIn:    timeStr,
-          timeOut:   null,
-          status:    'Inside',
+          gmail, name, visitorType, college, purpose,
+          date: dateStr, timeIn: timeStr,
+          timeOut: null, status: 'Inside',
           createdAt: serverTimestamp()
         });
 
         sessionStorage.removeItem('studentEmail');
         sessionStorage.removeItem('studentName');
 
-        // Fill in the success card details
-        document.getElementById('sName').textContent    = studentName;
-        document.getElementById('sEmail').textContent   = studentEmail;
+        document.getElementById('sName').textContent    = name;
+        document.getElementById('sEmail').textContent   = gmail || '—';
+        document.getElementById('sType').textContent    = visitorType;
+        document.getElementById('sCollege').textContent = college;
         document.getElementById('sPurpose').textContent = purpose;
         document.getElementById('sDate').textContent    = dateStr;
         document.getElementById('sTime').textContent    = timeStr;
 
-        // Swap views
         document.getElementById('formView').style.display = 'none';
         document.getElementById('successScreen').classList.add('visible');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -351,11 +471,10 @@
       }
     };
 
-    document.getElementById('purposeInput').addEventListener('input', function () {
-      this.classList.remove('textarea-error');
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    document.getElementById('visitorName').addEventListener('input', function() {
+      this.classList.remove('error');
+      document.getElementById('nameErr').classList.remove('show');
     });
   </script>
-
 </body>
 </html>
