@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login – NEU Library</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --neu-red: #c0392b; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+    .navbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 32px;
+      background: rgba(255,255,255,.06); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-logo  { width: 38px; height: 38px; border-radius: 8px; background: #fff; padding: 3px; object-fit: contain; }
+    .nav-title { color: #fff; font-weight: 600; font-size: 1rem; }
+    .nav-back  { color: rgba(255,255,255,.65); text-decoration: none; font-size: .85rem; display: flex; align-items: center; gap: 6px; }
+    .nav-back:hover { color: #fff; }
+
+    .main {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;
+    }
+    .card {
+      background: #fff; border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+      width: 100%; max-width: 420px; overflow: hidden;
+    }
+    .card-banner {
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      padding: 28px 24px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .shield-icon {
+      width: 64px; height: 64px; border-radius: 16px;
+      background: rgba(255,255,255,.1); border: 2px solid rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center; color: #fff;
+    }
+    .banner-title { color: #fff; font-family: 'Playfair Display', serif; font-size: 1.3rem; }
+    .banner-sub   { color: rgba(255,255,255,.45); font-size: .78rem; }
+
+    .card-body { padding: 28px 28px 32px; }
+    .card-subtitle { color: #6b7280; font-size: .87rem; margin-bottom: 20px; }
+
+    .error-box {
+      display: none; background: #fef2f2; border: 1px solid #fca5a5;
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 16px;
+      align-items: center; gap: 10px; font-size: .85rem; color: #b91c1c;
+    }
+    .error-box.show { display: flex; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: .83rem; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; letter-spacing: .3px; }
+    .label-row  { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .forgot-link { font-size: .8rem; color: #4f46e5; text-decoration: none; }
+    .forgot-link:hover { text-decoration: underline; }
+
+    .input-wrapper { position: relative; }
+    .input-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #9ca3af; display: flex; }
+    .form-input {
+      width: 100%; padding: 12px 42px;
+      border: 1.5px solid #e5e7eb; border-radius: 10px;
+      font-family: inherit; font-size: .9rem; color: #1a1a2e;
+      outline: none; transition: border-color .2s;
+    }
+    .form-input:focus { border-color: #312e81; box-shadow: 0 0 0 3px rgba(49,46,129,.08); }
+    .form-input.input-error { border-color: #ef4444; }
+    .toggle-pw {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #9ca3af; display: flex;
+    }
+    .toggle-pw:hover { color: #374151; }
+
+    .signin-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      color: #fff; border: none; border-radius: 12px;
+      font-family: inherit; font-size: .95rem; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity .2s;
+    }
+    .signin-btn:hover { opacity: .88; }
+    .signin-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .security-note {
+      margin-top: 14px; padding: 10px 14px;
+      background: #fafafa; border-radius: 8px; border: 1px solid #f0f0f0;
+      display: flex; align-items: center; gap: 8px;
+      font-size: .78rem; color: #9ca3af;
+    }
+
+    .back-link {
+      color: rgba(255,255,255,.5); text-decoration: none; font-size: .85rem;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .back-link:hover { color: #fff; }
+
+    .footer {
+      text-align: center; padding: 16px; color: rgba(255,255,255,.3); font-size: .78rem;
+    }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <img src="neuLogo.png" alt="NEU Logo" class="nav-logo" />
+      <span class="nav-title">NEU Library</span>
+    </div>
+    <a href="LandingPage.html" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Portal
+    </a>
+  </nav>
+
+  <main class="main">
+    <div class="card">
+      <div class="card-banner">
+        <div class="shield-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+        </div>
+        <div class="banner-title">Admin Login</div>
+        <div class="banner-sub">Library Management System</div>
+      </div>
+
+      <div class="card-body">
+        <p class="card-subtitle">Enter your admin credentials to access the management console.</p>
+
+        <!-- Error box -->
+        <div class="error-box" id="errorBox">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <span id="errorMsg">Invalid credentials. Please try again.</span>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+            </span>
+            <input type="email" id="email" class="form-input" placeholder="admin@neu.edu.ph" autocomplete="email"/>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <div class="label-row">
+            <label class="form-label" for="password">Password</label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input type="password" id="password" class="form-input" placeholder="••••••••" autocomplete="current-password"/>
+            <button class="toggle-pw" type="button" onclick="togglePassword()" title="Show/Hide Password">
+              <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="signin-btn" id="signinBtn" onclick="handleSignIn()">
+          <span id="signinBtnText">Sign In to Dashboard</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+
+        <div class="security-note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+          Secured by Firebase Authentication · IP logged for security
+        </div>
+      </div>
+    </div>
+
+    <a href="LandingPage.html" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Back to Public Portal
+    </a>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 New Era University Library. All rights reserved. | IP logged for security purposes.</p>
+  </footer>
+
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp }                            from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword }      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────
+    const firebaseConfig = {
+        apiKey: "AIzaSyAGzGi9sm0nh-rccNKze_DYBGVb7nnIg1Q",
+        authDomain: "neu-library-visitors-log.firebaseapp.com",
+        projectId: "neu-library-visitors-log",
+        storageBucket: "neu-library-visitors-log.firebasestorage.app",
+        messagingSenderId: "473646406825",
+        appId: "1:473646406825:web:dc1cb0abea173c43441db8",
+        measurementId: "G-N5FG6LH948"
+    };
+    // ─────────────────────────────────────────────────────────────
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      document.getElementById('errorMsg').textContent = msg;
+      box.classList.add('show');
+    }
+    function hideError() {
+      document.getElementById('errorBox').classList.remove('show');
+    }
+    function setLoading(on) {
+      document.getElementById('signinBtn').disabled = on;
+      document.getElementById('signinBtnText').textContent = on ? 'Signing in…' : 'Sign In to Dashboard';
+    }
+
+    window.handleSignIn = async function () {
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      hideError();
+
+      if (!email || !password) {
+        showError('Please fill in all fields.'); return;
+      }
+
+      setLoading(true);
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // Success → go to Admin Dashboard
+        window.location.href = 'AdminDashboard.html';
+      } catch (err) {
+        const msgs = {
+          'auth/user-not-found':  'No admin account found with that email.',
+          'auth/wrong-password':  'Incorrect password. Please try again.',
+          'auth/invalid-email':   'Invalid email format.',
+          'auth/too-many-requests': 'Too many attempts. Try again later.'
+        };
+        showError(msgs[err.code] || 'Invalid credentials. Please try again.');
+        setLoading(false);
+      }
+    };
+
+    window.togglePassword = function () {
+      const pw   = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      if (pw.type === 'password') {
+        pw.type = 'text';
+        icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+      } else {
+        pw.type = 'password';
+        icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+      }
+    };
+
+    ['email','password'].forEach(id => {
+      document.getElementById(id).addEventListener('input', hideError);
+    });
+  </script>
+
+</body>
+</html>

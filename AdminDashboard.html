@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – NEU Library</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --neu-dark: #0f172a; --neu-mid: #1e1b4b;
+      --blue: #3b82f6; --green: #22c55e; --red: #ef4444;
+      --orange: #f97316; --purple: #8b5cf6;
+      --bg: #f1f5f9; --card-bg: #ffffff;
+      --text: #0f172a; --muted: #64748b; --border: #e2e8f0;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* NAVBAR */
+    .navbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 28px; background: var(--neu-dark);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-logo  { width: 36px; height: 36px; border-radius: 8px; background: #fff; padding: 3px; object-fit: contain; }
+    .nav-title { color: #fff; font-weight: 600; font-size: .95rem; }
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .admin-chip {
+      background: rgba(255,255,255,.1); border-radius: 20px;
+      padding: 4px 12px; color: rgba(255,255,255,.7); font-size: .78rem;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .logout-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.3);
+      color: #fca5a5; padding: 7px 14px; border-radius: 8px;
+      font-family: inherit; font-size: .83rem; cursor: pointer;
+      text-decoration: none; transition: background .2s;
+    }
+    .logout-btn:hover { background: rgba(239,68,68,.25); }
+
+    .main { flex: 1; padding: 24px 28px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .page-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--text); }
+    .page-sub   { color: var(--muted); font-size: .85rem; margin-top: 3px; }
+    .live-dot   { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-right: 6px; animation: pulse 1.8s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+
+    /* ── ANALYTICS PANEL ── */
+    .analytics-panel {
+      background: var(--card-bg); border-radius: 16px;
+      border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,.05);
+      margin-bottom: 24px; overflow: hidden;
+    }
+    .analytics-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 22px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 12px;
+    }
+    .analytics-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text); }
+
+    /* Period tabs */
+    .period-tabs { display: flex; gap: 4px; background: #f1f5f9; border-radius: 10px; padding: 3px; }
+    .period-tab {
+      padding: 6px 14px; border-radius: 8px; border: none; background: transparent;
+      font-family: inherit; font-size: .8rem; font-weight: 500; color: var(--muted);
+      cursor: pointer; transition: all .15s;
+    }
+    .period-tab.active { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+
+    /* Date range inputs */
+    .date-range {
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 22px 16px; flex-wrap: wrap;
+    }
+    .date-range.hidden { display: none; }
+    .date-label { font-size: .82rem; color: var(--muted); font-weight: 500; }
+    .date-input {
+      padding: 7px 11px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: inherit; font-size: .82rem; color: var(--text); outline: none;
+      transition: border-color .2s;
+    }
+    .date-input:focus { border-color: var(--blue); }
+    .apply-btn {
+      padding: 7px 14px; background: var(--neu-dark); color: #fff;
+      border: none; border-radius: 8px; font-family: inherit; font-size: .82rem;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .apply-btn:hover { opacity: .85; }
+
+    /* STATS GRID */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 16px; padding: 16px 22px; border-bottom: 1px solid var(--border);
+    }
+    .stat-card {
+      background: var(--bg); border-radius: 12px;
+      padding: 16px 18px; border: 1px solid var(--border);
+    }
+    .stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .stat-label  { font-size: .72rem; font-weight: 700; color: var(--muted); letter-spacing: .3px; text-transform: uppercase; max-width: 80%; line-height: 1.3; }
+    .stat-icon   { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .stat-icon.blue   { background: #eff6ff; color: var(--blue); }
+    .stat-icon.green  { background: #f0fdf4; color: var(--green); }
+    .stat-icon.orange { background: #fff7ed; color: var(--orange); }
+    .stat-icon.purple { background: #f5f3ff; color: var(--purple); }
+    .stat-icon.red    { background: #fef2f2; color: var(--red); }
+    .stat-value  { font-size: 1.75rem; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .stat-sub    { font-size: .73rem; color: var(--muted); }
+
+    /* BREAKDOWN CHARTS */
+    .breakdown-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0; border-top: 1px solid var(--border);
+    }
+    .breakdown-col {
+      padding: 16px 20px; border-right: 1px solid var(--border);
+    }
+    .breakdown-col:last-child { border-right: none; }
+    .breakdown-title { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 12px; }
+    .bar-item { margin-bottom: 9px; }
+    .bar-label-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .bar-label { font-size: .78rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 75%; }
+    .bar-count { font-size: .78rem; font-weight: 600; color: var(--text); }
+    .bar-track { height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
+    .bar-fill  { height: 100%; border-radius: 3px; transition: width .4s ease; }
+    .bar-fill.blue   { background: var(--blue); }
+    .bar-fill.green  { background: var(--green); }
+    .bar-fill.purple { background: var(--purple); }
+    .bar-fill.orange { background: var(--orange); }
+
+    /* ── FILTER PANEL ── */
+    .filter-panel {
+      background: var(--card-bg); border-radius: 16px;
+      border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,.05);
+      padding: 16px 22px; margin-bottom: 20px;
+      display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap;
+    }
+    .filter-group { display: flex; flex-direction: column; gap: 5px; min-width: 160px; }
+    .filter-label { font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+    .filter-select {
+      padding: 8px 30px 8px 10px; border: 1.5px solid var(--border); border-radius: 9px;
+      font-family: inherit; font-size: .83rem; color: var(--text);
+      background: #fff; outline: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      cursor: pointer; transition: border-color .2s;
+    }
+    .filter-select:focus { border-color: var(--blue); }
+    .clear-filters-btn {
+      padding: 8px 14px; background: #f1f5f9; border: 1.5px solid var(--border);
+      border-radius: 9px; font-family: inherit; font-size: .82rem; color: var(--muted);
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .clear-filters-btn:hover { background: #e2e8f0; color: var(--text); }
+
+    /* ── TABLE ── */
+    .table-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,.05); overflow: hidden; }
+    .table-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 12px; }
+    .table-title  { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--text); }
+
+    .search-wrapper { position: relative; }
+    .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #9ca3af; display: flex; }
+    .search-input { padding: 9px 14px 9px 36px; border: 1.5px solid var(--border); border-radius: 10px; font-family: inherit; font-size: .85rem; color: var(--text); outline: none; width: 240px; transition: border-color .2s; }
+    .search-input:focus { border-color: var(--blue); }
+
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #f8fafc; }
+    th { padding: 10px 18px; text-align: left; font-size: .7rem; font-weight: 700; color: var(--muted); letter-spacing: .6px; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 11px 18px; font-size: .85rem; color: var(--text); border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    tbody tr:hover { background: #f8fafc; }
+    tbody tr:last-child td { border-bottom: none; }
+
+    .visitor-cell { display: flex; align-items: center; gap: 9px; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #1e1b4b, #312e81); display: flex; align-items: center; justify-content: center; color: #fff; font-size: .72rem; font-weight: 700; flex-shrink: 0; }
+    .v-name  { font-weight: 600; color: var(--text); font-size: .86rem; }
+    .v-email { font-size: .78rem; color: var(--muted); }
+
+    .type-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 9px; border-radius: 20px; font-size: .72rem; font-weight: 600;
+    }
+    .type-badge.student  { background: #eff6ff; color: #1d4ed8; }
+    .type-badge.teacher  { background: #f0fdf4; color: #15803d; }
+    .type-badge.staff    { background: #fff7ed; color: #c2410c; }
+    .type-badge.guest    { background: #f5f3ff; color: #6d28d9; }
+
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: .73rem; font-weight: 600; }
+    .status-badge.inside  { background: #dcfce7; color: #15803d; }
+    .status-badge.outside { background: #f1f5f9; color: #64748b; }
+
+    .purpose-text { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .college-text { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8rem; color: var(--muted); }
+
+    .checkout-btn { padding: 5px 11px; border-radius: 8px; font-family: inherit; font-size: .76rem; background: #fff; border: 1.5px solid var(--border); color: var(--muted); cursor: pointer; transition: all .15s; }
+    .checkout-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+    .checkout-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+    .entry-count { font-size: .8rem; color: var(--muted); }
+    .pagination { display: flex; gap: 4px; }
+    .page-btn, .page-num { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: inherit; font-size: .8rem; transition: all .15s; }
+    .page-num.active { background: var(--neu-dark); color: #fff; border-color: var(--neu-dark); }
+    .page-btn:hover, .page-num:hover:not(.active) { border-color: var(--neu-dark); color: var(--neu-dark); }
+
+    .empty-row td { text-align: center; padding: 32px; color: var(--muted); }
+    .loading-overlay { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--muted); gap: 10px; }
+    .spinner { width: 20px; height: 20px; border: 2px solid #e2e8f0; border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .refresh-btn { display: flex; align-items: center; gap: 6px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; color: var(--blue); padding: 7px 12px; font-family: inherit; font-size: .8rem; cursor: pointer; transition: background .2s; }
+    .refresh-btn:hover { background: #dbeafe; }
+
+    .footer { text-align: center; padding: 16px; color: var(--muted); font-size: .78rem; border-top: 1px solid var(--border); margin-top: 8px; }
+
+    @media (max-width: 768px) {
+      .main { padding: 16px; }
+      .breakdown-row { grid-template-columns: 1fr; }
+      .breakdown-col { border-right: none; border-bottom: 1px solid var(--border); }
+      .search-input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <img src="neuLogo.png" alt="NEU Logo" class="nav-logo" />
+      <span class="nav-title">Library Admin Dashboard</span>
+    </div>
+    <div class="nav-right">
+      <div class="admin-chip">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+        <span id="adminEmail">Admin</span>
+      </div>
+      <button class="logout-btn" id="logoutBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Visitor Overview</h1>
+        <p class="page-sub"><span class="live-dot"></span>Live data · Firebase Firestore</p>
+      </div>
+    </div>
+
+    <!-- ── ANALYTICS PANEL ── -->
+    <div class="analytics-panel">
+      <div class="analytics-header">
+        <span class="analytics-title">Visitor Statistics</span>
+        <div class="period-tabs">
+          <button class="period-tab active" onclick="setPeriod('today',this)">Today</button>
+          <button class="period-tab" onclick="setPeriod('week',this)">This Week</button>
+          <button class="period-tab" onclick="setPeriod('month',this)">This Month</button>
+          <button class="period-tab" onclick="setPeriod('year',this)">This Year</button>
+          <button class="period-tab" onclick="setPeriod('range',this)">Custom Range</button>
+        </div>
+      </div>
+
+      <!-- Date range row (shown only on Custom Range) -->
+      <div class="date-range hidden" id="dateRangeRow">
+        <span class="date-label">From</span>
+        <input type="date" id="dateFrom" class="date-input"/>
+        <span class="date-label">To</span>
+        <input type="date" id="dateTo" class="date-input"/>
+        <button class="apply-btn" onclick="applyRange()">Apply</button>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Currently Inside</span>
+            <span class="stat-icon green">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </span>
+          </div>
+          <div class="stat-value" id="statCurrent">–</div>
+          <div class="stat-sub">Live count inside library</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Total Visitors</span>
+            <span class="stat-icon blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </span>
+          </div>
+          <div class="stat-value" id="statPeriod">–</div>
+          <div class="stat-sub" id="statPeriodLabel">In selected period</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Students</span>
+            <span class="stat-icon blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+            </span>
+          </div>
+          <div class="stat-value" id="statStudents">–</div>
+          <div class="stat-sub">In selected period</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Employees</span>
+            <span class="stat-icon orange">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C10.34 3 9 4.34 9 6s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </span>
+          </div>
+          <div class="stat-value" id="statEmployees">–</div>
+          <div class="stat-sub">Teachers + Staff</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Guests</span>
+            <span class="stat-icon purple">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </span>
+          </div>
+          <div class="stat-value" id="statGuests">–</div>
+          <div class="stat-sub">In selected period</div>
+        </div>
+      </div>
+
+      <!-- Breakdown bars -->
+      <div class="breakdown-row">
+        <div class="breakdown-col">
+          <div class="breakdown-title">By Purpose</div>
+          <div id="purposeBars"><div style="color:#9ca3af;font-size:.8rem;">Loading…</div></div>
+        </div>
+        <div class="breakdown-col">
+          <div class="breakdown-title">By College / Dept.</div>
+          <div id="collegeBars"><div style="color:#9ca3af;font-size:.8rem;">Loading…</div></div>
+        </div>
+        <div class="breakdown-col">
+          <div class="breakdown-title">By Visitor Type</div>
+          <div id="typeBars"><div style="color:#9ca3af;font-size:.8rem;">Loading…</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FILTERS ── -->
+    <div class="filter-panel">
+      <div style="font-weight:600;font-size:.85rem;color:var(--text);white-space:nowrap;align-self:center;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filter Log
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Purpose</span>
+        <select class="filter-select" id="filterPurpose" onchange="applyTableFilters()">
+          <option value="">All Purposes</option>
+          <option>Studying</option>
+          <option>Research</option>
+          <option>Borrowing Books</option>
+          <option>Returning Books</option>
+          <option>Using Computers</option>
+          <option>Thesis Writing</option>
+          <option>Group Study</option>
+          <option>Reading Journals / Periodicals</option>
+          <option>Printing / Scanning</option>
+          <option>Accessing e-Resources</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">College / Dept.</span>
+        <select class="filter-select" id="filterCollege" onchange="applyTableFilters()">
+          <option value="">All Colleges</option>
+          <option>College of Arts and Sciences</option>
+          <option>College of Business and Accountancy</option>
+          <option>College of Computer Studies</option>
+          <option>College of Criminal Justice Education</option>
+          <option>College of Education</option>
+          <option>College of Engineering and Architecture</option>
+          <option>College of Health Sciences</option>
+          <option>College of Music</option>
+          <option>College of Nursing</option>
+          <option>College of Pharmacy</option>
+          <option>Senior High School</option>
+          <option>Graduate School</option>
+          <option>Administration Office</option>
+          <option>Library Department</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Visitor Type</span>
+        <select class="filter-select" id="filterType" onchange="applyTableFilters()">
+          <option value="">All Types</option>
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher (Employee)</option>
+          <option value="Staff">Staff (Employee)</option>
+          <option value="Guest">Guest</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Status</span>
+        <select class="filter-select" id="filterStatus" onchange="applyTableFilters()">
+          <option value="">All</option>
+          <option value="Inside">Inside</option>
+          <option value="Checked Out">Checked Out</option>
+        </select>
+      </div>
+      <button class="clear-filters-btn" onclick="clearFilters()">✕ Clear Filters</button>
+    </div>
+
+    <!-- ── TABLE ── -->
+    <div class="table-card">
+      <div class="table-header">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <h2 class="table-title">Visitor Log</h2>
+          <button class="refresh-btn" id="refreshBtn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+        <div class="search-wrapper">
+          <span class="search-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Search name, email, purpose…" oninput="applyTableFilters()"/>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <div class="loading-overlay" id="loadingOverlay">
+          <div class="spinner"></div><span>Loading visitor data…</span>
+        </div>
+        <table id="visitorTable" style="display:none;">
+          <thead>
+            <tr>
+              <th>VISITOR</th>
+              <th>TYPE</th>
+              <th>COLLEGE / DEPT.</th>
+              <th>PURPOSE</th>
+              <th>DATE</th>
+              <th>TIME IN</th>
+              <th>TIME OUT</th>
+              <th>STATUS</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="table-footer">
+        <div class="entry-count" id="entryCount">Loading…</div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Library Administration System. All rights reserved.</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut }
+                               from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc }
+                               from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAGzGi9sm0nh-rccNKze_DYBGVb7nnIg1Q",
+      authDomain: "neu-library-visitors-log.firebaseapp.com",
+      projectId: "neu-library-visitors-log",
+      storageBucket: "neu-library-visitors-log.firebasestorage.app",
+      messagingSenderId: "473646406825",
+      appId: "1:473646406825:web:dc1cb0abea173c43441db8",
+      measurementId: "G-N5FG6LH948"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    onAuthStateChanged(auth, user => {
+      if (!user) { window.location.href = 'AdminLogin.html'; return; }
+      document.getElementById('adminEmail').textContent = user.email;
+      startListening();
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'index.html';
+    });
+
+    // ── DATA ──────────────────────────────────────────────────────
+    let allVisitors  = [];
+    let currentPeriod = 'today';
+    let rangeFrom = null, rangeTo = null;
+    const ROWS_PER_PAGE = 15;
+    let currentPage = 1;
+
+    function startListening() {
+      const q = query(collection(db, 'visitors'), orderBy('createdAt', 'desc'));
+      onSnapshot(q, snap => {
+        allVisitors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        updateAnalytics();
+        applyTableFilters();
+        document.getElementById('loadingOverlay').style.display = 'none';
+        document.getElementById('visitorTable').style.display = 'table';
+      }, err => {
+        document.getElementById('loadingOverlay').innerHTML =
+          `<span style="color:#ef4444;">Error: ${err.message}</span>`;
+      });
+    }
+
+    // ── PERIOD HELPERS ────────────────────────────────────────────
+    function parsePHDate(dateStr) {
+      // "March 11, 2026" → Date
+      if (!dateStr) return null;
+      return new Date(dateStr);
+    }
+
+    function getDateBounds() {
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      if (currentPeriod === 'today') {
+        return [todayStart, new Date(todayStart.getTime() + 86400000)];
+      }
+      if (currentPeriod === 'week') {
+        const day = now.getDay();
+        const weekStart = new Date(todayStart);
+        weekStart.setDate(todayStart.getDate() - day);
+        const weekEnd = new Date(weekStart.getTime() + 7 * 86400000);
+        return [weekStart, weekEnd];
+      }
+      if (currentPeriod === 'month') {
+        const ms = new Date(now.getFullYear(), now.getMonth(), 1);
+        const me = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        return [ms, me];
+      }
+      if (currentPeriod === 'year') {
+        const ys = new Date(now.getFullYear(), 0, 1);
+        const ye = new Date(now.getFullYear() + 1, 0, 1);
+        return [ys, ye];
+      }
+      if (currentPeriod === 'range' && rangeFrom && rangeTo) {
+        return [new Date(rangeFrom), new Date(new Date(rangeTo).getTime() + 86400000)];
+      }
+      return [todayStart, new Date(todayStart.getTime() + 86400000)];
+    }
+
+    function inPeriod(v) {
+      const d = parsePHDate(v.date);
+      if (!d) return false;
+      const [from, to] = getDateBounds();
+      return d >= from && d < to;
+    }
+
+    // ── ANALYTICS ─────────────────────────────────────────────────
+    function updateAnalytics() {
+      const periodVisitors = allVisitors.filter(inPeriod);
+      const current    = allVisitors.filter(v => v.status === 'Inside').length;
+      const students   = periodVisitors.filter(v => v.visitorType === 'Student').length;
+      const employees  = periodVisitors.filter(v => v.visitorType === 'Teacher' || v.visitorType === 'Staff').length;
+      const guests     = periodVisitors.filter(v => v.visitorType === 'Guest').length;
+
+      document.getElementById('statCurrent').textContent  = current;
+      document.getElementById('statPeriod').textContent   = periodVisitors.length;
+      document.getElementById('statStudents').textContent = students;
+      document.getElementById('statEmployees').textContent = employees;
+      document.getElementById('statGuests').textContent   = guests;
+
+      const labels = {
+        today: "Today's visitors",
+        week:  "This week's visitors",
+        month: "This month's visitors",
+        year:  "This year's visitors",
+        range: "In date range"
+      };
+      document.getElementById('statPeriodLabel').textContent = labels[currentPeriod] || 'In selected period';
+
+      renderBars('purposeBars',  countBy(periodVisitors, 'purpose'),     'blue',   5);
+      renderBars('collegeBars',  countBy(periodVisitors, 'college'),     'green',  5);
+      renderBars('typeBars',     countBy(periodVisitors, 'visitorType'), 'purple', 4);
+    }
+
+    function countBy(arr, field) {
+      const map = {};
+      arr.forEach(v => {
+        const k = v[field] || 'Unknown';
+        map[k] = (map[k] || 0) + 1;
+      });
+      return Object.entries(map).sort((a,b) => b[1]-a[1]);
+    }
+
+    function renderBars(containerId, entries, color, max) {
+      const container = document.getElementById(containerId);
+      if (!entries.length) { container.innerHTML = '<div style="color:#9ca3af;font-size:.8rem;">No data</div>'; return; }
+      const top = entries.slice(0, max);
+      const maxVal = top[0][1];
+      container.innerHTML = top.map(([label, count]) => `
+        <div class="bar-item">
+          <div class="bar-label-row">
+            <span class="bar-label" title="${escHtml(label)}">${escHtml(label)}</span>
+            <span class="bar-count">${count}</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill ${color}" style="width:${Math.round(count/maxVal*100)}%"></div>
+          </div>
+        </div>`).join('');
+    }
+
+    // ── PERIOD CONTROLS ───────────────────────────────────────────
+    window.setPeriod = function(p, btn) {
+      currentPeriod = p;
+      document.querySelectorAll('.period-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('dateRangeRow').classList.toggle('hidden', p !== 'range');
+      if (p !== 'range') updateAnalytics();
+    };
+
+    window.applyRange = function() {
+      rangeFrom = document.getElementById('dateFrom').value;
+      rangeTo   = document.getElementById('dateTo').value;
+      if (!rangeFrom || !rangeTo) { alert('Please select both dates.'); return; }
+      updateAnalytics();
+    };
+
+    // ── TABLE FILTERS ─────────────────────────────────────────────
+    window.applyTableFilters = function() { currentPage = 1; renderTable(); };
+
+    window.clearFilters = function() {
+      ['filterPurpose','filterCollege','filterType','filterStatus','searchInput']
+        .forEach(id => { document.getElementById(id).value = ''; });
+      currentPage = 1;
+      renderTable();
+    };
+
+    function getTableFiltered() {
+      const q       = document.getElementById('searchInput').value.toLowerCase();
+      const purpose = document.getElementById('filterPurpose').value;
+      const college = document.getElementById('filterCollege').value;
+      const type    = document.getElementById('filterType').value;
+      const status  = document.getElementById('filterStatus').value;
+
+      return allVisitors.filter(v => {
+        if (q && !(
+          (v.name    || '').toLowerCase().includes(q) ||
+          (v.gmail   || '').toLowerCase().includes(q) ||
+          (v.purpose || '').toLowerCase().includes(q) ||
+          (v.college || '').toLowerCase().includes(q)
+        )) return false;
+        if (purpose && v.purpose !== purpose) return false;
+        if (college && v.college !== college) return false;
+        if (type    && v.visitorType !== type) return false;
+        if (status  && v.status !== status) return false;
+        return true;
+      });
+    }
+
+    // ── TABLE RENDER ──────────────────────────────────────────────
+    function renderTable() {
+      const filtered = getTableFiltered();
+      const total    = filtered.length;
+      const start    = (currentPage - 1) * ROWS_PER_PAGE;
+      const pageData = filtered.slice(start, start + ROWS_PER_PAGE);
+      const tbody    = document.getElementById('tableBody');
+
+      if (!pageData.length) {
+        tbody.innerHTML = `<tr class="empty-row"><td colspan="9">No visitor records found.</td></tr>`;
+      } else {
+        tbody.innerHTML = pageData.map(v => {
+          const initials = (v.name || v.gmail || '?').slice(0,2).toUpperCase();
+          const inside   = v.status === 'Inside';
+          const typeKey  = (v.visitorType || 'guest').toLowerCase();
+          return `
+            <tr>
+              <td>
+                <div class="visitor-cell">
+                  <div class="avatar">${initials}</div>
+                  <div>
+                    <div class="v-name">${escHtml(v.name || '—')}</div>
+                    <div class="v-email">${escHtml(v.gmail || '—')}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="type-badge ${typeKey}">${escHtml(v.visitorType || '—')}</span></td>
+              <td><div class="college-text" title="${escHtml(v.college||'')}">${escHtml(v.college || '—')}</div></td>
+              <td><div class="purpose-text" title="${escHtml(v.purpose||'')}">${escHtml(v.purpose || '—')}</div></td>
+              <td style="white-space:nowrap;font-size:.8rem;">${escHtml(v.date || '—')}</td>
+              <td style="white-space:nowrap;">${escHtml(v.timeIn || '—')}</td>
+              <td style="white-space:nowrap;">${v.timeOut ? escHtml(v.timeOut) : '<span style="color:#9ca3af;">—</span>'}</td>
+              <td>
+                <span class="status-badge ${inside ? 'inside' : 'outside'}">
+                  <svg width="7" height="7" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="currentColor"/></svg>
+                  ${inside ? 'Inside' : 'Checked Out'}
+                </span>
+              </td>
+              <td>
+                <button class="checkout-btn" onclick="checkOut('${v.id}')" ${!inside ? 'disabled' : ''}>
+                  ${inside ? 'Check Out' : 'Done'}
+                </button>
+              </td>
+            </tr>`;
+        }).join('');
+      }
+
+      document.getElementById('entryCount').textContent =
+        `Showing ${total ? Math.min(start+1, total) : 0}–${Math.min(start+ROWS_PER_PAGE, total)} of ${total} entries`;
+
+      renderPagination(Math.ceil(total / ROWS_PER_PAGE));
+    }
+
+    function renderPagination(totalPages) {
+      const c = document.getElementById('pagination');
+      if (totalPages <= 1) { c.innerHTML = ''; return; }
+      let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        if (totalPages > 7 && i > 2 && i < totalPages-1 && Math.abs(i-currentPage) > 1) {
+          if (i===3 || i===totalPages-2) html += `<span style="padding:0 4px;color:#9ca3af;">…</span>`;
+          continue;
+        }
+        html += `<button class="page-num ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+      }
+      html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+      c.innerHTML = html;
+    }
+
+    window.goPage = function(n) {
+      const total = Math.ceil(getTableFiltered().length / ROWS_PER_PAGE);
+      if (n < 1 || n > total) return;
+      currentPage = n; renderTable();
+    };
+
+    window.checkOut = async function(id) {
+      const now = new Date();
+      const timeOut = now.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit', hour12: true });
+      try {
+        await updateDoc(doc(db, 'visitors', id), { timeOut, status: 'Checked Out' });
+      } catch (err) { alert('Failed to check out: ' + err.message); }
+    };
+
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+      currentPage = 1; renderTable(); updateAnalytics();
+    });
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+
+</body>
+</html>
