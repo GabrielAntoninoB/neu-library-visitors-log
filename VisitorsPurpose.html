@@ -118,7 +118,7 @@
     .submit-btn:hover { opacity: .88; }
     .submit-btn:disabled { opacity: .5; cursor: not-allowed; }
 
-    /* SUCCESS */
+    /* ── SUCCESS / LOGOUT SCREENS ── */
     .success-screen {
       display: none; flex: 1; flex-direction: column;
       align-items: center; justify-content: center;
@@ -127,15 +127,23 @@
     .success-screen.visible { display: flex; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
+    /* green circle – time in */
     .success-circle {
       width: 96px; height: 96px; border-radius: 50%;
       background: linear-gradient(135deg, #16a34a, #15803d);
       display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
       box-shadow: 0 0 0 16px rgba(22,163,74,.15), 0 0 0 32px rgba(22,163,74,.07);
     }
-    .success-circle svg { color: #fff; }
+    /* blue circle – time out */
+    .logout-circle {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
+      box-shadow: 0 0 0 16px rgba(29,78,216,.15), 0 0 0 32px rgba(29,78,216,.07);
+    }
+    .success-circle svg, .logout-circle svg { color: #fff; }
     .success-heading { font-family: 'Playfair Display', serif; font-size: 2rem; color: #fff; margin-bottom: 10px; }
-    .success-msg { color: rgba(255,255,255,.7); font-size: .95rem; max-width: 340px; line-height: 1.6; margin-bottom: 28px; }
+    .success-msg { color: rgba(255,255,255,.7); font-size: .95rem; max-width: 380px; line-height: 1.6; margin-bottom: 28px; }
 
     .success-info-card {
       background: rgba(255,255,255,.08); backdrop-filter: blur(12px);
@@ -182,7 +190,9 @@
     </div>
   </nav>
 
-  <!-- FORM VIEW -->
+  <!-- ══════════════════════════════════════
+       FORM VIEW
+  ══════════════════════════════════════ -->
   <main class="main" id="formView">
     <div class="welcome-card">
       <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -330,7 +340,9 @@
     </div>
   </main>
 
-  <!-- SUCCESS SCREEN -->
+  <!-- ══════════════════════════════════════
+       TIME-IN SUCCESS SCREEN
+  ══════════════════════════════════════ -->
   <div class="success-screen" id="successScreen">
     <div class="success-circle">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -355,14 +367,43 @@
     </a>
   </div>
 
+  <!-- ══════════════════════════════════════
+       TIME-OUT / LOGOUT SCREEN
+  ══════════════════════════════════════ -->
+  <div class="success-screen" id="logoutScreen">
+    <div class="logout-circle">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+    </div>
+    <h2 class="success-heading">See You Next Time!</h2>
+    <p class="success-msg">You have been successfully logged out. Thank you for visiting the NEU Library!</p>
+    <div class="success-info-card">
+      <div class="info-row"><span class="info-label">Name</span><span class="info-value" id="loName">—</span></div>
+      <div class="info-row"><span class="info-label">Date</span><span class="info-value" id="loDate">—</span></div>
+      <div class="info-row"><span class="info-label">Time In</span><span class="info-value" id="loTimeIn">—</span></div>
+      <div class="info-row"><span class="info-label">Time Out</span><span class="info-value" id="loTimeOut">—</span></div>
+      <div class="info-row"><span class="info-label">Duration Inside</span><span class="info-value" id="loDuration">—</span></div>
+      <div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color:#60a5fa;">✔ Checked Out</span></div>
+    </div>
+    <a href="index.html" class="home-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Return to Home
+    </a>
+  </div>
+
   <footer class="footer">
     <p>© 2026 New Era University Library. All rights reserved.</p>
   </footer>
 
   <script type="module">
     import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp }
-                               from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp,
+      query, where, getDocs, doc, updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAGzGi9sm0nh-rccNKze_DYBGVb7nnIg1Q",
@@ -414,12 +455,37 @@
         if (show) ok = false;
       };
 
-      setErr('visitorName', 'nameErr', !name);
+      setErr('visitorName',    'nameErr',    !name);
       if (visitorType !== 'Guest') setErr('visitorCollege', 'collegeErr', !college);
-      setErr('purposeSelect', 'purposeErr', !purpose);
+      setErr('purposeSelect',  'purposeErr', !purpose);
       if (purpose === 'Others') setErr('othersBox', 'othersErr', !others);
 
       return ok;
+    }
+
+    /* ── Compute human-readable duration from two "HH:MM AM/PM" strings ── */
+    function computeDuration(timeInStr, timeOutStr) {
+      const parseMin = (s) => {
+        if (!s) return null;
+        const m = s.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (!m) return null;
+        let h = parseInt(m[1]);
+        const min = parseInt(m[2]);
+        const ampm = m[3].toUpperCase();
+        if (ampm === 'PM' && h !== 12) h += 12;
+        if (ampm === 'AM' && h === 12) h = 0;
+        return h * 60 + min;
+      };
+      const inM  = parseMin(timeInStr);
+      const outM = parseMin(timeOutStr);
+      if (inM === null || outM === null) return '—';
+      let diff = outM - inM;
+      if (diff < 0) diff += 24 * 60; // handle midnight crossing
+      const hrs  = Math.floor(diff / 60);
+      const mins = diff % 60;
+      if (hrs === 0)  return `${mins} min${mins !== 1 ? 's' : ''}`;
+      if (mins === 0) return `${hrs} hr${hrs !== 1 ? 's' : ''}`;
+      return `${hrs} hr${hrs !== 1 ? 's' : ''} ${mins} min${mins !== 1 ? 's' : ''}`;
     }
 
     window.handleSubmit = async function() {
@@ -427,7 +493,8 @@
 
       const btn = document.getElementById('submitBtn');
       const txt = document.getElementById('submitBtnText');
-      btn.disabled = true; txt.textContent = 'Saving…';
+      btn.disabled = true;
+      txt.textContent = 'Checking…';
 
       const name       = document.getElementById('visitorName').value.trim();
       const gmail      = document.getElementById('visitorGmail').value.trim() || studentEmail;
@@ -442,27 +509,86 @@
       const timeStr = now.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit', hour12: true });
 
       try {
-        await addDoc(collection(db, 'visitors'), {
-          gmail, name, visitorType, college, purpose,
-          date: dateStr, timeIn: timeStr,
-          timeOut: null, status: 'Inside',
-          createdAt: serverTimestamp()
-        });
+        /* ──────────────────────────────────────────────────────────
+           Check if this Gmail already has an active "Inside" record.
+           If yes  → TIME OUT (update that record).
+           If no   → TIME IN  (create new record).
+        ────────────────────────────────────────────────────────── */
+        let activeRecord = null;
 
-        sessionStorage.removeItem('studentEmail');
-        sessionStorage.removeItem('studentName');
+        if (gmail) {
+          const q = query(
+            collection(db, 'visitors'),
+            where('gmail',  '==', gmail),
+            where('status', '==', 'Inside')
+          );
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            // Pick the most recent active record
+            let latest = null;
+            snap.docs.forEach(d => {
+              const data = d.data();
+              if (!latest || (data.createdAt && data.createdAt.seconds > latest.createdAt?.seconds)) {
+                latest = { id: d.id, ...data };
+              }
+            });
+            activeRecord = latest;
+          }
+        }
 
-        document.getElementById('sName').textContent    = name;
-        document.getElementById('sEmail').textContent   = gmail || '—';
-        document.getElementById('sType').textContent    = visitorType;
-        document.getElementById('sCollege').textContent = college;
-        document.getElementById('sPurpose').textContent = purpose;
-        document.getElementById('sDate').textContent    = dateStr;
-        document.getElementById('sTime').textContent    = timeStr;
+        /* ════════════ TIME OUT ════════════ */
+        if (activeRecord) {
+          txt.textContent = 'Logging out…';
+          const duration = computeDuration(activeRecord.timeIn, timeStr);
 
-        document.getElementById('formView').style.display = 'none';
-        document.getElementById('successScreen').classList.add('visible');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+          await updateDoc(doc(db, 'visitors', activeRecord.id), {
+            timeOut: timeStr,
+            status:  'Checked Out',
+            duration: duration
+          });
+
+          sessionStorage.removeItem('studentEmail');
+          sessionStorage.removeItem('studentName');
+
+          document.getElementById('loName').textContent     = activeRecord.name || name;
+          document.getElementById('loDate').textContent     = activeRecord.date || dateStr;
+          document.getElementById('loTimeIn').textContent   = activeRecord.timeIn || '—';
+          document.getElementById('loTimeOut').textContent  = timeStr;
+          document.getElementById('loDuration').textContent = duration;
+
+          document.getElementById('formView').style.display = 'none';
+          document.getElementById('logoutScreen').classList.add('visible');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        /* ════════════ TIME IN ════════════ */
+        } else {
+          txt.textContent = 'Saving…';
+
+          await addDoc(collection(db, 'visitors'), {
+            gmail, name, visitorType, college, purpose,
+            date:     dateStr,
+            timeIn:   timeStr,
+            timeOut:  null,
+            duration: null,
+            status:   'Inside',
+            createdAt: serverTimestamp()
+          });
+
+          sessionStorage.removeItem('studentEmail');
+          sessionStorage.removeItem('studentName');
+
+          document.getElementById('sName').textContent    = name;
+          document.getElementById('sEmail').textContent   = gmail || '—';
+          document.getElementById('sType').textContent    = visitorType;
+          document.getElementById('sCollege').textContent = college;
+          document.getElementById('sPurpose').textContent = purpose;
+          document.getElementById('sDate').textContent    = dateStr;
+          document.getElementById('sTime').textContent    = timeStr;
+
+          document.getElementById('formView').style.display = 'none';
+          document.getElementById('successScreen').classList.add('visible');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
       } catch (err) {
         console.error(err);
