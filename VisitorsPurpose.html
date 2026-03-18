@@ -166,6 +166,23 @@
     }
     .home-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
 
+    /* ── AUTO-CHECKOUT LOADING STATE ── */
+    .checking-screen {
+      display: none; flex: 1; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 40px 16px; text-align: center;
+    }
+    .checking-screen.visible { display: flex; }
+    .checking-spinner {
+      width: 72px; height: 72px; border-radius: 50%;
+      border: 5px solid rgba(255,255,255,.15);
+      border-top-color: #fff;
+      animation: spin .8s linear infinite;
+      margin-bottom: 24px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .checking-text { color: rgba(255,255,255,.7); font-size: 1rem; }
+
     .footer { text-align: center; padding: 16px; color: rgba(255,255,255,.35); font-size: .78rem; }
 
     @media (max-width: 520px) {
@@ -394,6 +411,14 @@
     </a>
   </div>
 
+  <!-- ══════════════════════════════════════
+       AUTO-CHECKOUT LOADING SCREEN
+  ══════════════════════════════════════ -->
+  <div class="checking-screen" id="checkingScreen">
+    <div class="checking-spinner"></div>
+    <p class="checking-text">Recording your time out…</p>
+  </div>
+
   <footer class="footer">
     <p>© 2026 New Era University Library. All rights reserved.</p>
   </footer>
@@ -418,14 +443,149 @@
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
 
-    const studentEmail = sessionStorage.getItem('studentEmail') || '';
-    const studentName  = sessionStorage.getItem('studentName')  || '';
+    // ── Compute human-readable duration ───────────────────────────
+    function computeDuration(timeInStr, timeOutStr) {
+      const parseMin = (s) => {
+        if (!s) return null;
+        const m = s.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (!m) return null;
+        let h = parseInt(m[1]);
+        const min = parseInt(m[2]);
+        const ampm = m[3].toUpperCase();
+        if (ampm === 'PM' && h !== 12) h += 12;
+        if (ampm === 'AM' && h === 12) h = 0;
+        return h * 60 + min;
+      };
+      const inM  = parseMin(timeInStr);
+      const outM = parseMin(timeOutStr);
+      if (inM === null || outM === null) return '—';
+      let diff = outM - inM;
+      if (diff < 0) diff += 24 * 60;
+      const hrs  = Math.floor(diff / 60);
+      const mins = diff % 60;
+      if (hrs === 0)  return `${mins} min${mins !== 1 ? 's' : ''}`;
+      if (mins === 0) return `${hrs} hr${hrs !== 1 ? 's' : ''}`;
+      return `${hrs} hr${hrs !== 1 ? 's' : ''} ${mins} min${mins !== 1 ? 's' : ''}`;
+    }
 
-    document.getElementById('navUserName').textContent  = studentName || 'Visitor';
-    document.getElementById('studentBadge').textContent = studentEmail || 'Not signed in';
-    if (studentEmail) document.getElementById('visitorGmail').value = studentEmail;
-    if (studentName)  document.getElementById('visitorName').value  = studentName;
+    // ── Show logout screen with data ─────────────────────────────
+    function showLogoutScreen(name, date, timeIn, timeOut, duration) {
+      document.getElementById('loName').textContent     = name   || '—';
+      document.getElementById('loDate').textContent     = date   || '—';
+      document.getElementById('loTimeIn').textContent   = timeIn || '—';
+      document.getElementById('loTimeOut').textContent  = timeOut;
+      document.getElementById('loDuration').textContent = duration;
+      document.getElementById('formView').style.display = 'none';
+      document.getElementById('logoutScreen').classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
+    // ── ON PAGE LOAD: check if visitor already has an active session ──
+    (async function checkActiveSession() {
+      const activeDocId  = sessionStorage.getItem('activeVisitId');
+      const activeTimeIn = sessionStorage.getItem('activeTimeIn');
+      const activeDate   = sessionStorage.getItem('activeDate');
+      const activeName   = sessionStorage.getItem('studentName') || sessionStorage.getItem('activeVisitorName') || '';
+      const studentEmail = sessionStorage.getItem('studentEmail') || '';
+
+      const now     = new Date();
+      const timeStr = now.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit', hour12: true });
+      const dateStr = now.toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
+
+      // ── CASE 1: Active session stored locally → auto Time Out immediately ──
+      if (activeDocId) {
+        // Hide form instantly, show spinner
+        document.getElementById('formView').style.display = 'none';
+        document.getElementById('checkingScreen').classList.add('visible');
+
+        try {
+          const duration = computeDuration(activeTimeIn, timeStr);
+
+          await updateDoc(doc(db, 'visitors', activeDocId), {
+            timeOut:  timeStr,
+            status:   'Checked Out',
+            duration: duration
+          });
+
+          // Clear all session data
+          sessionStorage.removeItem('studentEmail');
+          sessionStorage.removeItem('studentName');
+          sessionStorage.removeItem('activeVisitId');
+          sessionStorage.removeItem('activeTimeIn');
+          sessionStorage.removeItem('activeDate');
+          sessionStorage.removeItem('activeVisitorName');
+
+          document.getElementById('checkingScreen').classList.remove('visible');
+          showLogoutScreen(activeName, activeDate || dateStr, activeTimeIn, timeStr, duration);
+
+        } catch (err) {
+          console.error('Auto time-out failed:', err);
+          document.getElementById('checkingScreen').classList.remove('visible');
+          // Show form as fallback if update fails
+          document.getElementById('formView').style.display = '';
+          alert('Could not record your time out: ' + err.message);
+        }
+        return; // Stop here — do not proceed to normal form setup
+      }
+
+      // ── CASE 2: No local session — check Firestore as fallback ──
+      const studentName = sessionStorage.getItem('studentName') || '';
+      document.getElementById('navUserName').textContent  = studentName || 'Visitor';
+      document.getElementById('studentBadge').textContent = studentEmail || 'Not signed in';
+      if (studentEmail) document.getElementById('visitorGmail').value = studentEmail;
+      if (studentName)  document.getElementById('visitorName').value  = studentName;
+
+      if (studentEmail) {
+        try {
+          const q = query(
+            collection(db, 'visitors'),
+            where('gmail',  '==', studentEmail),
+            where('status', '==', 'Inside')
+          );
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            // Found active record in Firestore → auto Time Out, hide form + show spinner
+            document.getElementById('formView').style.display = 'none';
+            document.getElementById('checkingScreen').classList.add('visible');
+
+            let latest = null;
+            snap.docs.forEach(d => {
+              const data = d.data();
+              if (!latest || (data.createdAt && data.createdAt.seconds > (latest.createdAt?.seconds || 0))) {
+                latest = { id: d.id, ...data };
+              }
+            });
+
+            const duration = computeDuration(latest.timeIn, timeStr);
+
+            await updateDoc(doc(db, 'visitors', latest.id), {
+              timeOut:  timeStr,
+              status:   'Checked Out',
+              duration: duration
+            });
+
+            sessionStorage.removeItem('studentEmail');
+            sessionStorage.removeItem('studentName');
+            sessionStorage.removeItem('activeVisitId');
+            sessionStorage.removeItem('activeTimeIn');
+            sessionStorage.removeItem('activeDate');
+            sessionStorage.removeItem('activeVisitorName');
+
+            document.getElementById('checkingScreen').classList.remove('visible');
+            showLogoutScreen(latest.name || studentName, latest.date || dateStr, latest.timeIn, timeStr, duration);
+            return;
+          }
+        } catch (readErr) {
+          // Firestore rules may block reads — that's fine, proceed to show the form normally
+          console.warn('Firestore active-session check skipped (rules may restrict reads):', readErr.message);
+        }
+      }
+
+      // ── CASE 3: Truly first visit — show form normally ──
+      // (form is already visible by default, nothing to do)
+    })();
+
+    // ── FORM LOGIC (only runs for first-time login) ───────────────
     let visitorType = 'Student';
 
     window.setType = function(type, btn) {
@@ -463,39 +623,15 @@
       return ok;
     }
 
-    /* ── Compute human-readable duration from two "HH:MM AM/PM" strings ── */
-    function computeDuration(timeInStr, timeOutStr) {
-      const parseMin = (s) => {
-        if (!s) return null;
-        const m = s.match(/(\d+):(\d+)\s*(AM|PM)/i);
-        if (!m) return null;
-        let h = parseInt(m[1]);
-        const min = parseInt(m[2]);
-        const ampm = m[3].toUpperCase();
-        if (ampm === 'PM' && h !== 12) h += 12;
-        if (ampm === 'AM' && h === 12) h = 0;
-        return h * 60 + min;
-      };
-      const inM  = parseMin(timeInStr);
-      const outM = parseMin(timeOutStr);
-      if (inM === null || outM === null) return '—';
-      let diff = outM - inM;
-      if (diff < 0) diff += 24 * 60; // handle midnight crossing
-      const hrs  = Math.floor(diff / 60);
-      const mins = diff % 60;
-      if (hrs === 0)  return `${mins} min${mins !== 1 ? 's' : ''}`;
-      if (mins === 0) return `${hrs} hr${hrs !== 1 ? 's' : ''}`;
-      return `${hrs} hr${hrs !== 1 ? 's' : ''} ${mins} min${mins !== 1 ? 's' : ''}`;
-    }
-
     window.handleSubmit = async function() {
       if (!validate()) return;
 
       const btn = document.getElementById('submitBtn');
       const txt = document.getElementById('submitBtnText');
       btn.disabled = true;
-      txt.textContent = 'Checking…';
+      txt.textContent = 'Saving…';
 
+      const studentEmail = sessionStorage.getItem('studentEmail') || '';
       const name       = document.getElementById('visitorName').value.trim();
       const gmail      = document.getElementById('visitorGmail').value.trim() || studentEmail;
       const college    = visitorType === 'Guest' ? 'N/A' : document.getElementById('visitorCollege').value;
@@ -509,86 +645,33 @@
       const timeStr = now.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit', hour12: true });
 
       try {
-        /* ──────────────────────────────────────────────────────────
-           Check if this Gmail already has an active "Inside" record.
-           If yes  → TIME OUT (update that record).
-           If no   → TIME IN  (create new record).
-        ────────────────────────────────────────────────────────── */
-        let activeRecord = null;
+        const docRef = await addDoc(collection(db, 'visitors'), {
+          gmail, name, visitorType, college, purpose,
+          date:      dateStr,
+          timeIn:    timeStr,
+          timeOut:   null,
+          duration:  null,
+          status:    'Inside',
+          createdAt: serverTimestamp()
+        });
 
-        if (gmail) {
-          const q = query(
-            collection(db, 'visitors'),
-            where('gmail',  '==', gmail),
-            where('status', '==', 'Inside')
-          );
-          const snap = await getDocs(q);
-          if (!snap.empty) {
-            // Pick the most recent active record
-            let latest = null;
-            snap.docs.forEach(d => {
-              const data = d.data();
-              if (!latest || (data.createdAt && data.createdAt.seconds > latest.createdAt?.seconds)) {
-                latest = { id: d.id, ...data };
-              }
-            });
-            activeRecord = latest;
-          }
-        }
+        // Save session data for instant Time Out on next login
+        sessionStorage.setItem('activeVisitId',    docRef.id);
+        sessionStorage.setItem('activeTimeIn',     timeStr);
+        sessionStorage.setItem('activeDate',        dateStr);
+        sessionStorage.setItem('activeVisitorName', name);
 
-        /* ════════════ TIME OUT ════════════ */
-        if (activeRecord) {
-          txt.textContent = 'Logging out…';
-          const duration = computeDuration(activeRecord.timeIn, timeStr);
+        document.getElementById('sName').textContent    = name;
+        document.getElementById('sEmail').textContent   = gmail || '—';
+        document.getElementById('sType').textContent    = visitorType;
+        document.getElementById('sCollege').textContent = college;
+        document.getElementById('sPurpose').textContent = purpose;
+        document.getElementById('sDate').textContent    = dateStr;
+        document.getElementById('sTime').textContent    = timeStr;
 
-          await updateDoc(doc(db, 'visitors', activeRecord.id), {
-            timeOut: timeStr,
-            status:  'Checked Out',
-            duration: duration
-          });
-
-          sessionStorage.removeItem('studentEmail');
-          sessionStorage.removeItem('studentName');
-
-          document.getElementById('loName').textContent     = activeRecord.name || name;
-          document.getElementById('loDate').textContent     = activeRecord.date || dateStr;
-          document.getElementById('loTimeIn').textContent   = activeRecord.timeIn || '—';
-          document.getElementById('loTimeOut').textContent  = timeStr;
-          document.getElementById('loDuration').textContent = duration;
-
-          document.getElementById('formView').style.display = 'none';
-          document.getElementById('logoutScreen').classList.add('visible');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        /* ════════════ TIME IN ════════════ */
-        } else {
-          txt.textContent = 'Saving…';
-
-          await addDoc(collection(db, 'visitors'), {
-            gmail, name, visitorType, college, purpose,
-            date:     dateStr,
-            timeIn:   timeStr,
-            timeOut:  null,
-            duration: null,
-            status:   'Inside',
-            createdAt: serverTimestamp()
-          });
-
-          sessionStorage.removeItem('studentEmail');
-          sessionStorage.removeItem('studentName');
-
-          document.getElementById('sName').textContent    = name;
-          document.getElementById('sEmail').textContent   = gmail || '—';
-          document.getElementById('sType').textContent    = visitorType;
-          document.getElementById('sCollege').textContent = college;
-          document.getElementById('sPurpose').textContent = purpose;
-          document.getElementById('sDate').textContent    = dateStr;
-          document.getElementById('sTime').textContent    = timeStr;
-
-          document.getElementById('formView').style.display = 'none';
-          document.getElementById('successScreen').classList.add('visible');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        document.getElementById('formView').style.display = 'none';
+        document.getElementById('successScreen').classList.add('visible');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
       } catch (err) {
         console.error(err);
