@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --neu-red: #c0392b; }
     body {
       font-family: 'DM Sans', sans-serif;
       background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
@@ -24,149 +23,111 @@
     .nav-brand { display: flex; align-items: center; gap: 10px; }
     .nav-logo  { width: 38px; height: 38px; border-radius: 8px; background: #fff; padding: 3px; object-fit: contain; }
     .nav-title { color: #fff; font-weight: 600; font-size: 1rem; }
-    .nav-back  { color: rgba(255,255,255,.65); text-decoration: none; font-size: .85rem; display: flex; align-items: center; gap: 6px; }
+    .nav-back  {
+      color: rgba(255,255,255,.65); text-decoration: none;
+      font-size: .85rem; display: flex; align-items: center; gap: 6px;
+      transition: color .15s;
+    }
     .nav-back:hover { color: #fff; }
 
     /* ── LAYOUT ── */
     .main {
       flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; padding: 40px 16px; gap: 16px;
+      align-items: center; justify-content: center;
+      padding: 40px 16px; gap: 18px;
     }
+
+    /* ── CARD ── */
     .card {
       background: #fff; border-radius: 20px;
-      box-shadow: 0 12px 40px rgba(0,0,0,.25);
-      width: 100%; max-width: 420px; overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,.28);
+      width: 100%; max-width: 400px; overflow: hidden;
     }
 
     /* ── BANNER ── */
     .card-banner {
       background: linear-gradient(135deg, #0f172a, #1e1b4b);
-      padding: 28px 24px; text-align: center;
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 32px 24px 28px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
     }
     .shield-icon {
-      width: 64px; height: 64px; border-radius: 16px;
+      width: 68px; height: 68px; border-radius: 18px;
       background: rgba(255,255,255,.1); border: 2px solid rgba(255,255,255,.2);
       display: flex; align-items: center; justify-content: center; color: #fff;
     }
-    .banner-title { color: #fff; font-family: 'Playfair Display', serif; font-size: 1.3rem; }
-    .banner-sub   { color: rgba(255,255,255,.45); font-size: .78rem; }
+    .banner-title { color: #fff; font-family: 'Playfair Display', serif; font-size: 1.4rem; }
+    .banner-sub   { color: rgba(255,255,255,.45); font-size: .8rem; }
 
     /* ── BODY ── */
-    .card-body { padding: 28px 28px 32px; }
-    .card-subtitle { color: #6b7280; font-size: .87rem; margin-bottom: 20px; }
+    .card-body { padding: 30px 28px 32px; }
 
-    /* ── METHOD TABS ── */
-    .method-tabs {
-      display: flex; gap: 0; margin-bottom: 22px;
-      border: 1.5px solid #e5e7eb; border-radius: 12px; overflow: hidden;
+    /* ── DOMAIN BADGE ── */
+    .domain-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: #f0fdf4; border: 1.5px solid #86efac;
+      border-radius: 10px; padding: 10px 14px;
+      font-size: .82rem; color: #15803d; font-weight: 600;
+      margin-bottom: 20px;
     }
-    .method-tab {
-      flex: 1; padding: 10px 8px; border: none; background: #f9fafb;
-      font-family: inherit; font-size: .83rem; font-weight: 500; color: #6b7280;
-      cursor: pointer; transition: all .15s; display: flex; align-items: center;
-      justify-content: center; gap: 7px; border-right: 1.5px solid #e5e7eb;
-    }
-    .method-tab:last-child { border-right: none; }
-    .method-tab.active {
-      background: #0f172a; color: #fff;
-    }
-    .method-tab:hover:not(.active) { background: #f1f5f9; color: #374151; }
 
-    /* ── ERROR / SUCCESS BOX ── */
+    /* ── MESSAGE BOX ── */
     .msg-box {
       display: none; border-radius: 10px; padding: 12px 14px;
-      margin-bottom: 16px; align-items: center; gap: 10px; font-size: .85rem;
+      margin-bottom: 18px; align-items: flex-start; gap: 10px;
+      font-size: .85rem; line-height: 1.45;
     }
     .msg-box.error   { display: flex; background: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c; }
     .msg-box.success { display: flex; background: #f0fdf4; border: 1px solid #86efac; color: #15803d; }
     .msg-box.info    { display: flex; background: #eff6ff; border: 1px solid #93c5fd; color: #1d4ed8; }
+    .msg-box svg { flex-shrink: 0; margin-top: 1px; }
 
-    /* ── FORM ── */
-    .login-panel { display: none; }
-    .login-panel.active { display: block; }
-
-    .form-group { margin-bottom: 16px; }
-    .form-label { display: block; font-size: .83rem; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; letter-spacing: .3px; }
-    .label-row  { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .forgot-link { font-size: .8rem; color: #4f46e5; text-decoration: none; }
-    .forgot-link:hover { text-decoration: underline; }
-
-    .input-wrapper { position: relative; }
-    .input-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #9ca3af; display: flex; }
-    .form-input {
-      width: 100%; padding: 12px 42px;
-      border: 1.5px solid #e5e7eb; border-radius: 10px;
-      font-family: inherit; font-size: .9rem; color: #1a1a2e;
-      outline: none; transition: border-color .2s;
+    /* ── DESCRIPTION ── */
+    .card-desc {
+      color: #6b7280; font-size: .87rem; margin-bottom: 22px; line-height: 1.55;
     }
-    .form-input:focus { border-color: #312e81; box-shadow: 0 0 0 3px rgba(49,46,129,.08); }
-    .form-input.input-error { border-color: #ef4444; }
-    .toggle-pw {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer; color: #9ca3af; display: flex;
-    }
-    .toggle-pw:hover { color: #374151; }
 
-    /* Email hint badge */
-    .email-hint {
-      font-size: .75rem; color: #9ca3af; margin-top: 5px;
-      display: flex; align-items: center; gap: 4px;
-    }
-    .email-hint svg { flex-shrink: 0; }
-
-    /* ── BUTTONS ── */
-    .signin-btn {
-      width: 100%; padding: 14px;
-      background: linear-gradient(135deg, #0f172a, #1e1b4b);
-      color: #fff; border: none; border-radius: 12px;
-      font-family: inherit; font-size: .95rem; font-weight: 600;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: opacity .2s;
-    }
-    .signin-btn:hover { opacity: .88; }
-    .signin-btn:disabled { opacity: .5; cursor: not-allowed; }
-
+    /* ── GOOGLE BUTTON ── */
     .google-btn {
-      width: 100%; padding: 13px;
-      background: #fff; color: #374151;
+      width: 100%; padding: 14px 18px;
+      background: #fff; color: #1f2937;
       border: 1.5px solid #e5e7eb; border-radius: 12px;
-      font-family: inherit; font-size: .93rem; font-weight: 500;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: background .2s, border-color .2s, box-shadow .2s;
+      font-family: inherit; font-size: .95rem; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
+      transition: background .18s, border-color .18s, box-shadow .18s, transform .12s;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
     }
-    .google-btn:hover { background: #f9fafb; border-color: #d1d5db; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-    .google-btn:disabled { opacity: .5; cursor: not-allowed; }
-
-    .google-panel-desc {
-      color: #6b7280; font-size: .85rem; margin-bottom: 20px; line-height: 1.5;
+    .google-btn:hover:not(:disabled) {
+      background: #f9fafb; border-color: #d1d5db;
+      box-shadow: 0 4px 14px rgba(0,0,0,.10);
+      transform: translateY(-1px);
     }
-    .google-domain-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #f0fdf4; border: 1px solid #86efac;
-      border-radius: 8px; padding: 8px 12px;
-      font-size: .8rem; color: #15803d; font-weight: 600;
-      margin-bottom: 20px; width: 100%;
-    }
+    .google-btn:active:not(:disabled) { transform: translateY(0); }
+    .google-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
 
     /* ── SECURITY NOTE ── */
     .security-note {
-      margin-top: 14px; padding: 10px 14px;
-      background: #fafafa; border-radius: 8px; border: 1px solid #f0f0f0;
+      margin-top: 18px; padding: 10px 14px;
+      background: #f8fafc; border-radius: 8px; border: 1px solid #f0f0f0;
       display: flex; align-items: center; gap: 8px;
-      font-size: .78rem; color: #9ca3af;
+      font-size: .76rem; color: #9ca3af; line-height: 1.4;
     }
+    .security-note svg { flex-shrink: 0; }
 
+    /* ── BACK LINK ── */
     .back-link {
       color: rgba(255,255,255,.5); text-decoration: none; font-size: .85rem;
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 6px; transition: color .15s;
     }
     .back-link:hover { color: #fff; }
 
-    .footer { text-align: center; padding: 16px; color: rgba(255,255,255,.3); font-size: .78rem; }
+    .footer { text-align: center; padding: 16px; color: rgba(255,255,255,.3); font-size: .76rem; }
 
-    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
-    .spinner-dark { display: inline-block; width: 16px; height: 16px; border: 2px solid #e5e7eb; border-top-color: #374151; border-radius: 50%; animation: spin .7s linear infinite; }
+    /* ── SPINNER ── */
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2.5px solid #e5e7eb; border-top-color: #374151;
+      border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
@@ -178,7 +139,9 @@
       <span class="nav-title">NEU Library</span>
     </div>
     <a href="index.html" class="nav-back">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
       Back to Portal
     </a>
   </nav>
@@ -189,7 +152,7 @@
       <!-- Banner -->
       <div class="card-banner">
         <div class="shield-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
           </svg>
         </div>
@@ -197,104 +160,56 @@
         <div class="banner-sub">Library Management System</div>
       </div>
 
+      <!-- Body -->
       <div class="card-body">
-        <p class="card-subtitle">Sign in with your NEU admin credentials to access the management console.</p>
 
-        <!-- Message box (shared) -->
+        <!-- Domain restriction badge -->
+        <div class="domain-badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+          Restricted to @neu.edu.ph accounts only
+        </div>
+
+        <!-- Message box -->
         <div class="msg-box" id="msgBox">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="msgIcon">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
           </svg>
-          <span id="msgText">Invalid credentials. Please try again.</span>
+          <span id="msgText"></span>
         </div>
 
-        <!-- ── LOGIN METHOD TABS ── -->
-        <div class="method-tabs">
-          <button class="method-tab active" id="tabEmail" onclick="switchTab('email')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-            </svg>
-            Email & Password
-          </button>
-          <button class="method-tab" id="tabGoogle" onclick="switchTab('google')">
-            <svg width="15" height="15" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Google Account
-          </button>
-        </div>
+        <!-- Description -->
+        <p class="card-desc">
+          Sign in with your <strong>NEU Google Workspace account</strong> to access the admin dashboard. Only authorised <strong>@neu.edu.ph</strong> accounts will be granted entry.
+        </p>
 
-        <!-- ══════════════════════════════════
-             PANEL 1 — EMAIL & PASSWORD
-        ══════════════════════════════════ -->
-        <div class="login-panel active" id="panelEmail">
+        <!-- Google Sign-In button -->
+        <button class="google-btn" id="googleBtn" onclick="handleGoogleSignIn()">
+          <svg width="20" height="20" viewBox="0 0 24 24" id="googleIcon">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          <span id="googleBtnText">Sign in with Google</span>
+        </button>
 
-          <!-- Email -->
-          <div class="form-group">
-            <label class="form-label" for="email">Email Address</label>
-            <div class="input-wrapper">
-              <span class="input-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                </svg>
-              </span>
-              <input type="email" id="email" class="form-input" placeholder="admin@neu.edu.ph" autocomplete="email"/>
-            </div>
-            <div class="email-hint">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-              Use your NEU email — example@neu.edu.ph
-            </div>
-          </div>
-
-          <button class="signin-btn" id="signinBtn" onclick="handleEmailSignIn()">
-            <span id="signinBtnText">Sign In to Dashboard</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-            </svg>
-          </button>
-
-          <div class="security-note">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-            Secured by Firebase Authentication · IP logged for security
-          </div>
-        </div>
-
-        <!-- ══════════════════════════════════
-             PANEL 2 — GOOGLE ACCOUNT
-        ══════════════════════════════════ -->
-        <div class="login-panel" id="panelGoogle">
-
-          <p class="google-panel-desc">Sign in with your NEU Google Workspace account. Only authorised <strong>@neu.edu.ph</strong> admin accounts will be granted access.</p>
-
-          <div class="google-domain-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-            Restricted to @neu.edu.ph accounts only
-          </div>
-
-          <button class="google-btn" id="googleBtn" onclick="handleGoogleSignIn()">
-            <svg width="20" height="20" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            <span id="googleBtnText">Continue with Google</span>
-          </button>
-
-          <div class="security-note" style="margin-top:16px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-            OAuth 2.0 via Firebase Authentication · Secured & encrypted
-          </div>
+        <!-- Security note -->
+        <div class="security-note">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+          OAuth 2.0 via Firebase Authentication · Secured &amp; encrypted · Session IP logged
         </div>
 
       </div>
     </div>
 
     <a href="index.html" class="back-link">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
       Back to Public Portal
     </a>
   </main>
@@ -303,10 +218,9 @@
     <p>© 2026 New Era University Library. All rights reserved. | IP logged for security purposes.</p>
   </footer>
 
-  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail }
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut }
       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -322,129 +236,110 @@
     const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // ── TAB SWITCHER ─────────────────────────────────────────────
-    window.switchTab = function(tab) {
-      hideMsg();
-      document.getElementById('tabEmail').classList.toggle('active', tab === 'email');
-      document.getElementById('tabGoogle').classList.toggle('active', tab === 'google');
-      document.getElementById('panelEmail').classList.toggle('active', tab === 'email');
-      document.getElementById('panelGoogle').classList.toggle('active', tab === 'google');
-    };
+    // ── ALLOWED NEU DOMAINS ────────────────────────────────────────
+    const ALLOWED_DOMAINS = ['@neu.edu.ph', '@neu.edu'];
 
-    // ── MESSAGE HELPERS ───────────────────────────────────────────
+    function isNEUAccount(email) {
+      return ALLOWED_DOMAINS.some(domain => email.toLowerCase().endsWith(domain));
+    }
+
+    // ── MESSAGE HELPERS ────────────────────────────────────────────
     function showMsg(text, type = 'error') {
       const box  = document.getElementById('msgBox');
       const span = document.getElementById('msgText');
       const icon = document.getElementById('msgIcon');
       box.className = `msg-box ${type}`;
       span.textContent = text;
-
-      // Swap icon based on type
-      if (type === 'success') {
-        icon.innerHTML = `<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>`;
-      } else if (type === 'info') {
-        icon.innerHTML = `<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>`;
-      } else {
-        icon.innerHTML = `<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>`;
-      }
+      const icons = {
+        error:   `<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>`,
+        success: `<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>`,
+        info:    `<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>`,
+      };
+      icon.innerHTML = icons[type] || icons.error;
     }
+
     function hideMsg() {
       document.getElementById('msgBox').className = 'msg-box';
     }
 
-    // ── EMAIL ERROR MESSAGES ──────────────────────────────────────
-    const errorMap = {
-      'auth/user-not-found':        'No admin account found with that email.',
-      'auth/wrong-password':        'Incorrect password. Please try again.',
-      'auth/invalid-email':         'Invalid email format. Use yourname@neu.edu.ph',
-      'auth/invalid-credential':    'Incorrect email or password. Please try again.',
-      'auth/too-many-requests':     'Too many failed attempts. Please wait a moment and try again.',
-      'auth/user-disabled':         'This account has been disabled. Contact your administrator.',
-      'auth/network-request-failed':'Network error. Please check your connection.',
-    };
-
-    // ── SIGN IN WITH EMAIL ────────────────────────────────────────
-    window.handleEmailSignIn = async function() {
-      hideMsg();
-      const email    = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-
-      if (!email || !password) {
-        showMsg('Please fill in both email and password.'); return;
-      }
-      if (!email.endsWith('@neu.edu.ph') && !email.endsWith('@neu.edu')) {
-        showMsg('Please use your NEU email address (e.g. admin@neu.edu.ph).'); return;
-      }
-
-      const btn = document.getElementById('signinBtn');
-      const txt = document.getElementById('signinBtnText');
-      btn.disabled = true;
-      txt.innerHTML = '<span class="spinner"></span>&nbsp;Signing in…';
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        showMsg('Login successful! Redirecting…', 'success');
-        setTimeout(() => { window.location.href = 'AdminDashboard.html'; }, 800);
-      } catch (err) {
-        showMsg(errorMap[err.code] || 'Login failed. Please check your credentials.');
-        btn.disabled = false;
-        txt.textContent = 'Sign In to Dashboard';
-      }
-    };
-
-    // ── SIGN IN WITH GOOGLE ───────────────────────────────────────
-    window.handleGoogleSignIn = async function() {
-      hideMsg();
+    // ── BUTTON STATE ───────────────────────────────────────────────
+    function setLoading(on) {
       const btn = document.getElementById('googleBtn');
       const txt = document.getElementById('googleBtnText');
-      btn.disabled = true;
-      txt.innerHTML = '<span class="spinner-dark"></span>&nbsp;Signing in…';
+      btn.disabled = on;
+
+      if (on) {
+        // Replace icon with spinner
+        document.getElementById('googleIcon').outerHTML =
+          `<span class="spinner" id="googleIcon"></span>`;
+        txt.textContent = 'Signing in…';
+      } else {
+        // Restore Google icon
+        document.getElementById('googleIcon').outerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" id="googleIcon">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>`;
+        txt.textContent = 'Sign in with Google';
+      }
+    }
+
+    // ── GOOGLE SIGN-IN ─────────────────────────────────────────────
+    window.handleGoogleSignIn = async function() {
+      hideMsg();
+      setLoading(true);
 
       try {
         const provider = new GoogleAuthProvider();
-        // Hint the picker to show only NEU accounts
+        // Pre-filter the Google account picker to show NEU accounts first
         provider.setCustomParameters({ hd: 'neu.edu.ph' });
 
         const result = await signInWithPopup(auth, provider);
         const user   = result.user;
 
-        // Enforce NEU domain — reject any non-NEU google accounts
-        if (!user.email.endsWith('@neu.edu.ph') && !user.email.endsWith('@neu.edu')) {
-          await auth.signOut();
-          showMsg('Access denied. Only @neu.edu.ph Google accounts are authorised.');
-          btn.disabled = false;
-          txt.textContent = 'Continue with Google';
+        // ── DOMAIN ENFORCEMENT ─────────────────────────────────────
+        // Hard-check even if user bypasses the hd picker hint
+        if (!isNEUAccount(user.email)) {
+          await signOut(auth);
+          showMsg(
+            `Access denied. "${user.email}" is not an authorised NEU account. ` +
+            `Please use your @neu.edu.ph Google account.`
+          );
+          setLoading(false);
           return;
         }
 
-        showMsg(`Welcome, ${user.displayName || user.email}! Redirecting…`, 'success');
-        setTimeout(() => { window.location.href = 'AdminDashboard.html'; }, 800);
+        // ── SUCCESS ────────────────────────────────────────────────
+        showMsg(`Welcome, ${user.displayName || user.email}! Redirecting to dashboard…`, 'success');
+        setTimeout(() => { window.location.href = 'AdminDashboard.html'; }, 900);
 
       } catch (err) {
-        if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
-          // User closed the popup — silent, no error shown
-          btn.disabled = false;
-          txt.textContent = 'Continue with Google';
+        // User closed the popup — silent, no error shown
+        if (
+          err.code === 'auth/popup-closed-by-user' ||
+          err.code === 'auth/cancelled-popup-request'
+        ) {
+          setLoading(false);
           return;
         }
-        showMsg(errorMap[err.code] || 'Google sign-in failed. Please try again.');
-        btn.disabled = false;
-        txt.textContent = 'Continue with Google';
+
+        const errorMap = {
+          'auth/popup-blocked':
+            'Pop-up was blocked by your browser. Please allow pop-ups for this site and try again.',
+          'auth/network-request-failed':
+            'Network error. Please check your connection and try again.',
+          'auth/user-disabled':
+            'This account has been disabled. Contact your administrator.',
+          'auth/account-exists-with-different-credential':
+            'An account already exists with a different sign-in method.',
+        };
+        showMsg(errorMap[err.code] || 'Sign-in failed. Please try again.');
+        setLoading(false);
       }
     };
-
-    // ── CLEAR MSG ON INPUT ────────────────────────────────────────
-    ['email', 'password'].forEach(id => {
-      document.getElementById(id).addEventListener('input', hideMsg);
-    });
-
-    // ── ENTER KEY SUBMITS EMAIL FORM ──────────────────────────────
-    document.getElementById('password').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') handleEmailSignIn();
-    });
-    document.getElementById('email').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') document.getElementById('password').focus();
-    });
   </script>
+
 </body>
 </html>
