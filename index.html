@@ -11,11 +11,9 @@
     :root {
       --neu-red:    #85544e;
       --neu-dark:   #262645;
-      --neu-gold:   #f0c040;
       --card-bg:    #ffffff;
       --text-main:  #1a1a2e;
       --text-muted: #6b7280;
-      --border:     #e5e7eb;
       --shadow:     0 8px 32px rgba(0,0,0,.10);
     }
 
@@ -27,7 +25,7 @@
       flex-direction: column;
     }
 
-    /* NAVBAR */
+    /* ── NAVBAR ── */
     .navbar {
       display: flex; align-items: center; justify-content: space-between;
       padding: 14px 32px;
@@ -39,16 +37,8 @@
     .nav-brand { display: flex; align-items: center; gap: 10px; }
     .nav-logo  { width: 38px; height: 38px; border-radius: 8px; object-fit: contain; background: #fff; padding: 3px; }
     .nav-title { color: #fff; font-weight: 600; font-size: 1rem; letter-spacing: .3px; }
-    .nav-actions { display: flex; gap: 8px; }
-    .nav-btn {
-      background: rgba(255,255,255,.12); border: none; border-radius: 8px;
-      color: #fff; width: 38px; height: 38px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background .2s;
-    }
-    .nav-btn:hover { background: rgba(255,255,255,.22); }
 
-    /* MAIN */
+    /* ── MAIN ── */
     .main {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -56,6 +46,7 @@
       gap: 28px;
     }
 
+    /* ── HERO ── */
     .hero { text-align: center; }
     .hero-title {
       font-family: 'Tahoma', sans-serif;
@@ -64,32 +55,38 @@
     }
     .hero-subtitle { color: rgba(255,255,255,.65); font-size: .95rem; }
 
-    /* CARD */
+    /* ── CARD ── */
     .card {
       background: var(--card-bg);
       border-radius: 20px;
-      box-shadow: var(--shadow);
+      box-shadow: 0 12px 40px rgba(0,0,0,.18);
       width: 100%; max-width: 440px;
       overflow: hidden;
     }
+
+    /* ── CARD BANNER (red top strip) ── */
     .card-banner {
       background: linear-gradient(135deg, var(--neu-red), #a93226);
-      padding: 28px 24px 20px;
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 22px 24px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
     }
-    .banner-icon { display: flex; gap: 6px; color: rgba(255,255,255,.85); }
     .banner-label {
-      color: rgba(255,255,255,.7); font-size: .7rem;
-      letter-spacing: 2px; font-weight: 600;
+      color: rgba(255,255,255,.85); font-size: .7rem;
+      letter-spacing: 2px; font-weight: 700; text-transform: uppercase;
     }
+
+    /* ── CARD BODY ── */
     .card-body { padding: 28px 28px 32px; }
+
     .card-title {
-      font-family: 'Arial', ;
+      font-family: 'Arial', sans-serif;
       font-size: 1.5rem; color: var(--text-main); margin-bottom: 6px;
     }
     .card-subtitle { color: var(--text-muted); font-size: .88rem; margin-bottom: 24px; }
 
+    /* ── BUTTONS ── */
     .login-options { display: flex; flex-direction: column; gap: 12px; }
+
     .login-btn {
       display: flex; align-items: center; gap: 12px;
       padding: 14px 18px; border-radius: 12px;
@@ -97,7 +94,8 @@
       transition: transform .15s, box-shadow .15s;
       cursor: pointer;
     }
-    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+
     .login-btn--student {
       background: linear-gradient(135deg, #1a1a2e, #16213e);
       color: #fff;
@@ -106,16 +104,20 @@
       background: linear-gradient(135deg, var(--neu-red), #a93226);
       color: #fff;
     }
-    .btn-icon { display: flex; }
-    .btn-text { flex: 1; }
+
+    .btn-icon  { display: flex; }
+    .btn-text  { flex: 1; }
     .btn-arrow { margin-left: auto; opacity: .7; display: flex; }
 
-    /* FOOTER */
+    /* ── FOOTER ── */
     .footer {
       text-align: center; padding: 20px 16px;
       color: rgba(255,255,255,.4); font-size: .78rem;
     }
-    .footer-motto { font-size: .7rem; letter-spacing: 1.5px; margin-top: 4px; color: rgba(255,255,255,.3); }
+    .footer-motto {
+      font-size: .7rem; letter-spacing: 1.5px;
+      margin-top: 4px; color: rgba(255,255,255,.3);
+    }
   </style>
 </head>
 <body>
@@ -128,15 +130,28 @@
   </nav>
 
   <main class="main">
+
+    <!-- Hero -->
     <div class="hero">
       <h1 class="hero-title">NEU Library<br/>Visitor Log</h1>
       <p class="hero-subtitle">Welcome to New Era University Library</p>
     </div>
+
+    <!-- Card -->
+    <div class="card">
+
+      <!-- Red banner strip -->
+      <div class="card-banner">
+        <span class="banner-label">Knowledge Gateway</span>
+      </div>
+
+      <!-- Body -->
       <div class="card-body">
         <h2 class="card-title">Visitor Access</h2>
         <p class="card-subtitle">Please select your login type to proceed to the visitor log.</p>
 
         <div class="login-options">
+
           <a href="StudentLogin.html" class="login-btn login-btn--student">
             <span class="btn-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -164,9 +179,11 @@
               </svg>
             </span>
           </a>
+
         </div>
       </div>
     </div>
+
   </main>
 
   <footer class="footer">
